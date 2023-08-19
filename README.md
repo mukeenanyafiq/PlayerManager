@@ -1,6 +1,6 @@
 # PlayerManager
 A PocketMine-MP Plugin that allows admins to manage players and acquire players information using FormAPI!\
-This plugin was inspired by PlayerInfo
+This plugin was inspired by [PlayerInfo](https://github.com/Matthww/PlayerInfo)
 
 The player's information includes:
 - Player's device model
@@ -32,6 +32,9 @@ Such as:
 
 You can change the `<player>` argument to any player name\
 (You can use `@s` as the player argument to indicate you)
+
+## Permissions
+- `playermanager.command.plmanager` - Allows user/player to open PlayerManager form
 
 ## Note
 This is **my very first PocketMine-MP plugin**. Expect some bad or inefficient codes.\
