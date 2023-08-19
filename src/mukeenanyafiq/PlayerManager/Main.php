@@ -18,7 +18,7 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\utils\TextFormat as TF;
 
 class Main extends PluginBase implements Listener {
-    public $FIRST_PLACE_TYPE = [
+    public const FIRST_PLACE_TYPE = [
         "model", 
         "os", 
         "ip", 
@@ -33,7 +33,7 @@ class Main extends PluginBase implements Listener {
         "gamemode"
     ];
 
-    public $FIRST_PLACE_TYPE_EXTRA = [
+    public const FIRST_PLACE_TYPE_EXTRA = [
         "model" => 0, 
         "os" => 1, 
         "ip" => 2, 
@@ -47,16 +47,14 @@ class Main extends PluginBase implements Listener {
         "position" => 10,
         "gamemode" => 11
     ];
-    
-    public $FIRST_PLACE_TYPE_EXTRA2 = array_flip($this->FIRST_PLACE_TYPE_EXTRA);
 
-    public $PLAYER_MANAGE_CATEGORY = [
+    public const PLAYER_MANAGE_CATEGORY = [
         "session",
         "ability",
         "attributes"
     ];
 
-    public $AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER = [
+    public const AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER = [
         "info",
         "reload",
         "session",
@@ -66,9 +64,9 @@ class Main extends PluginBase implements Listener {
 
     public $firstplacetypechoosen = "";
 
-    private $FORMTITLE = "PlayerManager";
+    private const FORMTITLE = "PlayerManager";
 
-    private $SUPPORTED_LANGUAGE_LIST = [
+    private const SUPPORTED_LANGUAGE_LIST = [
         "eng"
     ];
 
@@ -80,7 +78,7 @@ class Main extends PluginBase implements Listener {
 
     public function onEnable(): void {
         $this->getLogger()->info("Plugin has been enabled");
-        if (in_array($this->getConfig()->get("firstplace"), $this->FIRST_PLACE_TYPE) === false) {
+        if (in_array($this->getConfig()->get("firstplace"), $this::FIRST_PLACE_TYPE) === false) {
             $this->getLogger()->warning("Unknown firstplace type: '" .strtolower($this->getConfig()->get("firstplace")). "'. Check any misspells or typos you might have made. For now, the type will be set to 'model' for default");
             $this->firstplacetypechoosen = "model";
         } else {
@@ -93,7 +91,7 @@ class Main extends PluginBase implements Listener {
                 $this->getLogger()->info("There are " .count($this->getConfig()->get("blacklist")). " blacklisted players from using PlayerManager form: " .implode(", ", $this->getConfig()->get("blacklist")));
             }
         }
-        if (in_array($this->getConfig()->get("language"), $this->SUPPORTED_LANGUAGE_LIST)) {
+        if (in_array($this->getConfig()->get("language"), $this::SUPPORTED_LANGUAGE_LIST)) {
             $this->pluginlanguage = parse_ini_file($this->getDataFolder(). "lang/" .$this->getConfig()->get("language"). ".ini", false, INI_SCANNER_RAW);
         } else {
             $this->getLogger()->warning("Unknown language: '" .strtolower($this->getConfig()->get("language")). "'. Check any misspells or typos you might have made. For now, the language will be set to 'eng' for English as default");
@@ -114,14 +112,14 @@ class Main extends PluginBase implements Listener {
                 }
 
                 if (isset($args[0])) {
-                    if (!in_array($args[0], $this->AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER)) {
+                    if (!in_array($args[0], $this::AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER)) {
                         if ($commandSender instanceof Player) {
                             $commandSender->sendMessage(TF::colorize("&cERROR: Invalid argument '" .$args[0]. "'. If you want to open player information, you may aswell try /plmanager info <player>"));
-                            $commandSender->sendMessage("Available argument: " .implode(", ", $this->AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER));
+                            $commandSender->sendMessage("Available argument: " .implode(", ", $this::AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER));
                             return true;
                         } else {
                             $commandSender->sendMessage(TF::colorize("&cERROR: Invalid argument '" .$args[0]. "'."));
-                            $commandSender->sendMessage("Available argument ('reload' is the only argument that is usable from everywhere): " .implode(", ", $this->AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER));
+                            $commandSender->sendMessage("Available argument ('reload' is the only argument that is usable from everywhere): " .implode(", ", $this::AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER));
                             return true;
                         }
                     }
@@ -130,7 +128,7 @@ class Main extends PluginBase implements Listener {
                         $this->getConfig()->reload();
                         $commandSender->sendMessage(TF::colorize("&aConfiguration file (config.yml) has been reloaded."));
                         $this->getLogger()->info("Configuration file (located in " .$this->getDataFolder(). "config.yml) has been reloaded by " .$commandSender->getName(). ".");
-                        if (in_array($this->getConfig()->get("firstplace"), $this->FIRST_PLACE_TYPE) === false) {
+                        if (in_array($this->getConfig()->get("firstplace"), $this::FIRST_PLACE_TYPE) === false) {
                             $commandSender->sendMessage(TF::colorize("&eUnknown firstplace type: '" .strtolower($this->getConfig()->get("firstplace")). "'. Check any misspells or typos you might have made. For now, the type will be set to 'model' for default"));
                             $this->firstplacetypechoosen = "model";
                         } else {
@@ -150,7 +148,7 @@ class Main extends PluginBase implements Listener {
                                 $commandSender->sendMessage(TF::colorize("&cUnfortunately, you are in the list of blacklisted players from using PlayerManager form. This means &lyou can't use PlayerManager form anymore."));
                             }
                         }
-                        if (in_array($this->getConfig()->get("language"), $this->SUPPORTED_LANGUAGE_LIST)) {
+                        if (in_array($this->getConfig()->get("language"), $this::SUPPORTED_LANGUAGE_LIST)) {
                             $this->pluginlanguage = parse_ini_file($this->getDataFolder(). "lang/" .$this->getConfig()->get("language"). ".ini", false, INI_SCANNER_RAW);
                         } else {
                             $this->getLogger()->warning("Unknown language: '" .strtolower($this->getConfig()->get("language")). "'. Check any misspells or typos you might have made. For now, the language will be set to 'eng' for English as default");
@@ -204,9 +202,9 @@ class Main extends PluginBase implements Listener {
                 break;
                 
                 case $args[0]:
-                    if (!in_array($args[0], $this->AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER)) {
+                    if (!in_array($args[0], $this::AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER)) {
                         $player->sendMessage(TF::colorize("&cERROR: Invalid argument '" .$args[0]. "'. If you want to open player information, you may aswell try /plmanager info <player>"));
-                        $player->sendMessage("Available argument: " .implode(", ", $this->AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER));
+                        $player->sendMessage("Available argument: " .implode(", ", $this::AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER));
                     }
 
                     if (!isset($args[1])) {
@@ -246,7 +244,7 @@ class Main extends PluginBase implements Listener {
                                     $this->openPlayerInformationPage($player, $target);
                             }
                         });
-                        $form->setTitle($this->FORMTITLE);
+                        $form->setTitle($this::FORMTITLE);
                         $form->setContent("Select the player you want to manage");
                         foreach ($this->getServer()->getOnlinePlayers() as $value) {
                             $clientData = $value->getPlayerInfo()->getExtraData();
@@ -320,7 +318,7 @@ class Main extends PluginBase implements Listener {
                                                                     break;
                                                                 }
                                                             });
-                                                            $form->setTitle($this->FORMTITLE. " - Unban player");
+                                                            $form->setTitle($this::FORMTITLE. " - Unban player");
                                                             $form->setContent(TF::colorize("Are you sure you want to unban &a" .$target->getName(). "&f? The player might break another rule of the server again after the player has been unbanned. If you think the player is innocent enough, you may unban the player."));
                                                             $form->setButton1("Yes");
                                                             $form->setButton2("No");
@@ -341,7 +339,7 @@ class Main extends PluginBase implements Listener {
                                                 return $form;
                                         }
                                     });
-                                    $form->setTitle($this->FORMTITLE);
+                                    $form->setTitle($this::FORMTITLE);
                                     $form->setContent("Select one of the banned players you want to manage");
                                     foreach ($this->getServer()->getNameBans()->getEntries() as $value) {
                                         $form->addButton(TF::colorize($this->getServer()->getOfflinePlayer($value->getName())->getName(). "\n&l" .$value->getReason()));
@@ -381,7 +379,7 @@ class Main extends PluginBase implements Listener {
                                                                     break;
                                                                 }
                                                             });
-                                                            $form->setTitle($this->FORMTITLE. " - Unban IP");
+                                                            $form->setTitle($this::FORMTITLE. " - Unban IP");
                                                             $form->setContent(TF::colorize("Are you sure you want to unban IP &a" .$target->getName(). "&f? The player with the IP might break another rule of the server again after the player has been unbanned. If you think the player is innocent enough, you may unban the player with the IP."));
                                                             $form->setButton1("Yes");
                                                             $form->setButton2("No");
@@ -396,7 +394,7 @@ class Main extends PluginBase implements Listener {
                                                 return $form;
                                         }
                                     });
-                                    $form->setTitle($this->FORMTITLE);
+                                    $form->setTitle($this::FORMTITLE);
                                     $form->setContent("Select one of the banned IP you want to manage");
                                     foreach ($this->getServer()->getIPBans()->getEntries() as $value) {
                                         $form->addButton(TF::colorize($value->getName(). "\n&l" .$value->getReason()));
@@ -405,7 +403,7 @@ class Main extends PluginBase implements Listener {
                                     return $form;
                             }
                         });
-                        $form->setTitle($this->FORMTITLE);
+                        $form->setTitle($this::FORMTITLE);
                         $form->setContent("Select a banned player type");
                         $form->addButton("Banned players Name");
                         $form->addButton("Banned players IP");
@@ -415,7 +413,7 @@ class Main extends PluginBase implements Listener {
                         $this->getConfig()->reload();
                         $player->sendMessage(TF::colorize("&aConfiguration file (config.yml) has been reloaded."));
                         $this->getLogger()->info("Configuration file (located in " .$this->getDataFolder(). "config.yml) has been reloaded by " .$player->getName(). ".");
-                        if (in_array($this->getConfig()->get("firstplace"), $this->FIRST_PLACE_TYPE) === false) {
+                        if (in_array($this->getConfig()->get("firstplace"), $this::FIRST_PLACE_TYPE) === false) {
                             $player->sendMessage(TF::colorize("&eUnknown firstplace type: '" .strtolower($this->getConfig()->get("firstplace")). "'. Check any misspells or typos you might have made. For now, the type will be set to 'model' for default"));
                             $this->firstplacetypechoosen = "model";
                         } else {
@@ -427,7 +425,7 @@ class Main extends PluginBase implements Listener {
                     break;
                 }
             });
-            $form->setTitle($this->FORMTITLE);
+            $form->setTitle($this::FORMTITLE);
             $form->setContent("PlayerManager v" .$currpl->getDescription()->getVersion(). "\nCreated by " .array_values($currpl->getDescription()->getAuthors())[0]. "\n \nSelect an action to continue");
             $form->addButton("Manage a player\n" .TF::BOLD. "Managing a player");
             $form->addButton("Manage a banned player\n" .TF::BOLD. "Managing a banned player");
@@ -639,7 +637,7 @@ class Main extends PluginBase implements Listener {
 
                     switch ($data) {
                         case 0:
-                            $player->sendMessage($playertarget->getName(). "'s attributes - " .$this->FORMTITLE);
+                            $player->sendMessage($playertarget->getName(). "'s attributes - " .$this::FORMTITLE);
                             $player->sendMessage("Absorption: " .$playertarget->getAbsorption(). "\nAir Supply Ticks: " .$playertarget->getAirSupplyTicks(). "\nHas Auto Jump: " .$playertarget->hasAutoJump(). "\nIs Breathing: " .$playertarget->isBreathing(). "\nCan Climb: " .$playertarget->canClimb(). "\nCan Climb Walls: " .$playertarget->canClimbWalls(). "\nDisplay Name: " .$playertarget->getDisplayName(). "\nFire Ticks: " .$playertarget->getFireTicks(). "\nGamemode: " .$playertarget->getGamemode()->name(). "\nIs Gliding: " .$playertarget->isGliding(). "\nGravity: " .$playertarget->getGravity(). "\nHas Gravity: " .$playertarget->hasGravity(). "Health: " .$playertarget->getHealth(). " HP\nIs Invisible: " .$playertarget->isInvisible(). "\nMaximum Air Supply Ticks: " .$playertarget->getMaxAirSupplyTicks(). "\nMaximum Health: " .$playertarget->getMaxHealth(). "\nMovement Speed: " .$playertarget->getMovementSpeed(). "\nName Tag: " .$playertarget->getNameTag(). "\nIs Name Tag Always Visible: " .$playertarget->isNameTagAlwaysVisible(). "\nIs Name Tag Visible: " .$playertarget->isNameTagVisible(). "\nOn Fire For: " .$playertarget->isOnFire(). " seconds\nScale: " .$playertarget->getScale(). "\nIs Silent: " .$playertarget->isSilent(). "\nIs Sneaking: " .$playertarget->isSneaking(). "\nIs Sprinting: " .$playertarget->isSprinting(). "\nIs Swimming: " .$playertarget->isSwimming());
                         case 1:
                             $form = new CustomForm(function (Player $player, $data = null) use ($playertarget, $gamemodes) {
@@ -688,7 +686,7 @@ class Main extends PluginBase implements Listener {
                                         break;
                                     }
                                 });
-                                $form->setTitle($this->FORMTITLE. " - Confirmation");
+                                $form->setTitle($this::FORMTITLE. " - Confirmation");
                                 if ($playertarget->getName() === $player->getName()) {
                                     $form->setContent("Are you sure you want to keep changing your attribute? This change could be a mess and there is no way to revert it back unless you remembered/saved the attributes!");
                                 } else {
@@ -734,7 +732,7 @@ class Main extends PluginBase implements Listener {
                 $form->addButton(TF::colorize("Get Attributes\n&lGets player's attributes"));
                 $form->addButton("Change Attributes\n&lChange player's attributes");
             default:
-                $player->sendMessage(TF::colorize("&cERROR: Unknown category: " .$category. ". Available category are: " .implode(", ", $this->PLAYER_MANAGE_CATEGORY)));
+                $player->sendMessage(TF::colorize("&cERROR: Unknown category: " .$category. ". Available category are: " .implode(", ", $this::PLAYER_MANAGE_CATEGORY)));
             break;
         }
     }
