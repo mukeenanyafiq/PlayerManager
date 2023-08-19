@@ -575,6 +575,15 @@ class Main extends PluginBase implements Listener {
                         break;
 
                         case 1:
+                            if ($playertarget->hasBlockCollision() === false) {
+                                $player->sendMessage(TF::colorize($playertarget->getName(). " already has No-Clip enabled!"));
+                            } else {
+                                $playertarget->setHasBlockCollision(false);
+                                $player->sendMessage(TF::colorize("&aNo-Clip ability for " .$playertarget->getName(). " has been enabled!"));
+                            }
+                        break;
+
+                        case 2:
                             if ($playertarget->isCreative()) {
                                 $player->sendMessage(TF::colorize($playertarget->getName(). " is on Creative. They could toggle their fly anytime they want."));
                             } else {
@@ -583,12 +592,23 @@ class Main extends PluginBase implements Listener {
                                 $player->sendMessage(TF::colorize("&aFlying ability for " .$playertarget->getName(). " has been disabled!"));
                             }
                         break;
+                        
+                        case 3:
+                            if ($playertarget->hasBlockCollision() === true) {
+                                $player->sendMessage(TF::colorize($playertarget->getName(). " already has No-Clip disabled!"));
+                            } else {
+                                $playertarget->setHasBlockCollision(true);
+                                $player->sendMessage(TF::colorize("&aNo-Clip ability for " .$playertarget->getName(). " has been disabled!"));
+                            }
+                        break;
                     }
                 });
                 $form->setTitle($playertarget->getName(). "'s Ability");
                 $form->setContent("Select an action to continue");
                 $form->addButton(TF::colorize("Enable Fly\n&lAllows player to fly"));
+                $form->addButton(TF::colorize("Enable No-Clip\n&lAllows player to no-clip"));
                 $form->addButton(TF::colorize("Disable Fly\n&lDisable ability fly"));
+                $form->addButton(TF::colorize("Disable No-Clip\n&lDisable ability no-clip"));
                 $player->sendForm($form);
                 return $form;
             default:
