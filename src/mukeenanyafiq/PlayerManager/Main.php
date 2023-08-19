@@ -646,7 +646,7 @@ class Main extends PluginBase implements Listener {
                                 }
         
                                 $form = new ModalForm(function (Player $player, $d2 = null) use ($playertarget, $gamemodes, $data) {
-                                    if ($data === null) {
+                                    if ($d2 === null) {
                                         return true;
                                     }
         
