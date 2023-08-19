@@ -625,7 +625,7 @@ class Main extends PluginBase implements Listener {
                 });
                 $form->setTitle($playertarget->getName(). "'s Ability");
                 $form->setContent("Select an action to continue");
-                $form->addButton(TF::colorize("Enable Fly\n&lAllows player to fly"));
+                $form->addButton(TF::coloriz("Enable Fly\n&lAllows player to fly"));
                 $form->addButton(TF::colorize("Enable No-Clip\n&lAllows player to no-clip"));
                 $form->addButton(TF::colorize("Disable Fly\n&lDisable ability fly"));
                 $form->addButton(TF::colorize("Disable No-Clip\n&lDisable ability no-clip"));
