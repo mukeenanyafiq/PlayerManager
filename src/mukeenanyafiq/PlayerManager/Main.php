@@ -91,12 +91,6 @@ class Main extends PluginBase implements Listener {
                 $this->getLogger()->info("There are " .count($this->getConfig()->get("blacklist")). " blacklisted players from using PlayerManager form: " .implode(", ", $this->getConfig()->get("blacklist")));
             }
         }
-        if (in_array($this->getConfig()->get("language"), $this::SUPPORTED_LANGUAGE_LIST)) {
-            $this->pluginlanguage = parse_ini_file($this->getDataFolder(). "lang/" .$this->getConfig()->get("language"). ".ini", false, INI_SCANNER_RAW);
-        } else {
-            $this->getLogger()->warning("Unknown language: '" .strtolower($this->getConfig()->get("language")). "'. Check any misspells or typos you might have made. For now, the language will be set to 'eng' for English as default");
-            $this->pluginlanguage = parse_ini_file($this->getDataFolder(). "lang/eng.ini", false, INI_SCANNER_RAW);
-        }
     }
 
     public function onCommand(CommandSender $commandSender, Command $command, string $commandLabel, array $args): bool {
@@ -143,12 +137,6 @@ class Main extends PluginBase implements Listener {
                             } else {
                                 $commandSender->sendMessage(TF::colorize("&cUnfortunately, you are in the list of blacklisted players from using PlayerManager form. This means &lyou can't use PlayerManager form anymore."));
                             }
-                        }
-                        if (in_array($this->getConfig()->get("language"), $this::SUPPORTED_LANGUAGE_LIST)) {
-                            $this->pluginlanguage = parse_ini_file($this->getDataFolder(). "lang/" .$this->getConfig()->get("language"). ".ini", false, INI_SCANNER_RAW);
-                        } else {
-                            $this->getLogger()->warning("Unknown language: '" .strtolower($this->getConfig()->get("language")). "'. Check any misspells or typos you might have made. For now, the language will be set to 'eng' for English as default");
-                            $this->pluginlanguage = parse_ini_file($this->getDataFolder(). "lang/eng.ini", false, INI_SCANNER_RAW);
                         }
                         return true;
                     }
