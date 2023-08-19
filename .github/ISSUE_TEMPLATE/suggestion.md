@@ -2,7 +2,7 @@
 name: Suggestion
 about: Suggest an idea for this plugin
 title: Suggestion
-labels: enhancement
+labels: suggestion
 assignees: ''
 
 ---
