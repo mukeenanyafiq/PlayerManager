@@ -17,9 +17,17 @@
 # "gamemode" - Shows the player's gamemode
 
 # Support case insensitive so even if you're still inputting the type with some upper case words, it would still work. (ex: "Model", "oS")
+# Anything inputted other than the list on the top will be set to 'model' by default.
 firstplace: model
 
 # "blacklist" - List of players that won't be able to access PlayerManager form
 # Put the player's username in the list to blacklist them
 blacklist: []
+
+# "language" - Sets the plugin's language
+# This also applicable to everyone, meaning the language of the form for everyone will be set to the inputted language.
+
+# Supported language:
+# "eng" - English
+language: eng
 ...
