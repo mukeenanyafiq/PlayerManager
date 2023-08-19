@@ -632,91 +632,107 @@ class Main extends PluginBase implements Listener {
 
                 $max = 300;
 
-                $form = new CustomForm(function (Player $player, $data = null) use ($playertarget, $gamemodes) {
+                $form = new SimpleForm(function (Player $player, $data = null) use ($playertarget, $gamemodes, $gamemodes2, $max) {
                     if ($data === null) {
-                        return true;
+                        return null;
                     }
 
-                    $form = new ModalForm(function (Player $player, $d2 = null) use ($playertarget, $gamemodes, $data) {
-                        if ($data === null) {
-                            return true;
-                        }
-
-                        switch ($d2) {
-                            case 0:
-                                $player->sendMessage("The action has been canceled.");
-                            break;
-
-                            case 1:
-                                $playertarget->setAbsorption(floatval($data[0]));
-                                $playertarget->setAirSupplyTicks(intval($data[1]));
-                                $playertarget->setAutoJump($data[2]);
-                                $playertarget->setBreathing($data[3]);
-                                $playertarget->setCanClimb($data[4]);
-                                $playertarget->setCanClimbWalls($data[5]);
-                                $playertarget->setDisplayName($data[6]);
-                                $playertarget->setFireTicks($data[7]);
-                                $playertarget->setGamemode(GameMode::fromString($gamemodes[$data[8]]));
-                                $playertarget->setGliding($data[9]);
-                                $playertarget->setGravity(floatval($data[10]));
-                                $playertarget->setHasGravity($data[11]);
-                                $playertarget->setHealth(floatval($data[12]));
-                                $playertarget->setInvisible($data[13]);
-                                $playertarget->setMaxAirSupplyTicks($data[14]);
-                                $playertarget->setMaxHealth($data[15]);
-                                $playertarget->setMovementSpeed(floatval($data[16]));
-                                $playertarget->setNameTag($data[17]);
-                                $playertarget->setNameTagAlwaysVisible($data[18]);
-                                $playertarget->setNameTagVisible($data[19]);
-                                $playertarget->setOnFire($data[20]);
-                                $playertarget->setScale(floatval($data[21]));
-                                $playertarget->setSilent($data[22]);
-                                $playertarget->setSneaking($data[23]);
-                                $playertarget->setSprinting($data[24]);
-                                $playertarget->setSwimming($data[25]);
-                                $player->sendMessage(TF::colorize("&a" .$playertarget->getName(). "'s attributes successfully changed!"));
-                            break;
-                        }
-                    });
-                    $form->setTitle($this::FORMTITLE. " - Confirmation");
-                    if ($playertarget->getName() === $player->getName()) {
-                        $form->setContent("Are you sure you want to keep changing your attribute? This change could be a mess and there is no way to revert it back unless you remembered/saved the attributes!");
-                    } else {
-                        $form->setContent("Are you sure you want to keep changing " .$playertarget->getName(). "'s attribute? This change could be a mess and there is no way to revert it back unless you remembered/saved the attributes!");
+                    switch ($data) {
+                        case 0:
+                            $player->sendMessage($playertarget->getName(). "'s attributes - " .$this::FORMTITLE);
+                            $player->sendMessage("Absorption: " .$playertarget->getAbsorption(). "\nAir Supply Ticks: " .$playertarget->getAirSupplyTicks(). "\nHas Auto Jump: " .$playertarget->hasAutoJump(). "\nIs Breathing: " .$playertarget->isBreathing(). "\nCan Climb: " .$playertarget->canClimb(). "\nCan Climb Walls: " .$playertarget->canClimbWalls(). "\nDisplay Name: " .$playertarget->getDisplayName(). "\nFire Ticks: " .$playertarget->getFireTicks(). "\nGamemode: " .$playertarget->getGamemode()->name(). "\nIs Gliding: " .$playertarget->isGliding(). "\nGravity: " .$playertarget->getGravity(). "\nHas Gravity: " .$playertarget->hasGravity(). "Health: " .$playertarget->getHealth(). " HP\nIs Invisible: " .$playertarget->isInvisible(). "\nMaximum Air Supply Ticks: " .$playertarget->getMaxAirSupplyTicks(). "\nMaximum Health: " .$playertarget->getMaxHealth(). "\nMovement Speed: " .$playertarget->getMovementSpeed(). "\nName Tag: " .$playertarget->getNameTag(). "\nIs Name Tag Always Visible: " .$playertarget->isNameTagAlwaysVisible(). "\nIs Name Tag Visible: " .$playertarget->isNameTagVisible(). "\nOn Fire For: " .$playertarget->isOnFire(). " seconds\nScale: " .$playertarget->getScale(). "\nIs Silent: " .$playertarget->isSilent(). "\nIs Sneaking: " .$playertarget->isSneaking(). "\nIs Sprinting: " .$playertarget->isSprinting(). "\nIs Swimming: " .$playertarget->isSwimming());
+                        case 1:
+                            $form = new CustomForm(function (Player $player, $data = null) use ($playertarget, $gamemodes) {
+                                if ($data === null) {
+                                    return true;
+                                }
+        
+                                $form = new ModalForm(function (Player $player, $d2 = null) use ($playertarget, $gamemodes, $data) {
+                                    if ($data === null) {
+                                        return true;
+                                    }
+        
+                                    switch ($d2) {
+                                        case 0:
+                                            $player->sendMessage("The action has been canceled.");
+                                        break;
+        
+                                        case 1:
+                                            $playertarget->setAbsorption(floatval($data[0]));
+                                            $playertarget->setAirSupplyTicks(intval($data[1]));
+                                            $playertarget->setAutoJump($data[2]);
+                                            $playertarget->setBreathing($data[3]);
+                                            $playertarget->setCanClimb($data[4]);
+                                            $playertarget->setCanClimbWalls($data[5]);
+                                            $playertarget->setDisplayName($data[6]);
+                                            $playertarget->setFireTicks($data[7]);
+                                            $playertarget->setGamemode(GameMode::fromString($gamemodes[$data[8]]));
+                                            $playertarget->setGliding($data[9]);
+                                            $playertarget->setGravity(floatval($data[10]));
+                                            $playertarget->setHasGravity($data[11]);
+                                            $playertarget->setHealth(floatval($data[12]));
+                                            $playertarget->setInvisible($data[13]);
+                                            $playertarget->setMaxAirSupplyTicks($data[14]);
+                                            $playertarget->setMaxHealth($data[15]);
+                                            $playertarget->setMovementSpeed(floatval($data[16]));
+                                            $playertarget->setNameTag($data[17]);
+                                            $playertarget->setNameTagAlwaysVisible($data[18]);
+                                            $playertarget->setNameTagVisible($data[19]);
+                                            $playertarget->setOnFire($data[20]);
+                                            $playertarget->setScale(floatval($data[21]));
+                                            $playertarget->setSilent($data[22]);
+                                            $playertarget->setSneaking($data[23]);
+                                            $playertarget->setSprinting($data[24]);
+                                            $playertarget->setSwimming($data[25]);
+                                            $player->sendMessage(TF::colorize("&a" .$playertarget->getName(). "'s attributes successfully changed!"));
+                                        break;
+                                    }
+                                });
+                                $form->setTitle($this::FORMTITLE. " - Confirmation");
+                                if ($playertarget->getName() === $player->getName()) {
+                                    $form->setContent("Are you sure you want to keep changing your attribute? This change could be a mess and there is no way to revert it back unless you remembered/saved the attributes!");
+                                } else {
+                                    $form->setContent("Are you sure you want to keep changing " .$playertarget->getName(). "'s attribute? This change could be a mess and there is no way to revert it back unless you remembered/saved the attributes!");
+                                }
+                                $form->setButton1("Yes");
+                                $form->setButton2("No");
+                                $player->sendForm($form);
+                            });
+                            $form->setTitle($playertarget->getName(). "'s Attributes");
+                            $form->addSlider("Set player's absorption", 0, $max, 1, intval($playertarget->getAbsorption()));
+                            $form->addSlider("Set player's air supply ticks", 0, $playertarget->getMaxAirSupplyTicks(), 1, $playertarget->getAirSupplyTicks());
+                            $form->addToggle("Set player's autojump", $playertarget->hasAutoJump());
+                            $form->addToggle("Set player is breathing", $playertarget->isBreathing());
+                            $form->addToggle("Set player can climb", $playertarget->canClimb());
+                            $form->addToggle("Set player can climb walls", $playertarget->canClimbWalls());
+                            $form->addInput("Set player's display name", "Enter player's new display name", $playertarget->getDisplayName());
+                            $form->addSlider("Set player's fire tick", 0, $max, 1, $playertarget->getFireTicks());
+                            $form->addDropdown("Set player's gamemode", ["Adventure", "Survival", "Creative", "Spectator"], $gamemodes2[strtolower($playertarget->getGamemode()->name())]);
+                            $form->addToggle("Set player is glidng", $playertarget->isGliding());
+                            $form->addSlider("Set player's gravity", 0, $max, 1, intval($playertarget->getGravity()));
+                            $form->addToggle("Set player has gravity", $playertarget->hasGravity());
+                            $form->addSlider("Set player's health", 0, $playertarget->getMaxHealth(), 1, intval($playertarget->getHealth()));
+                            $form->addToggle("Set player is invisible", $playertarget->isInvisible());
+                            $form->addSlider("Set player's max air supply ticks", 1, $max, 1, $playertarget->getMaxAirSupplyTicks());
+                            $form->addSlider("Set player's max health", 0, $max, 1, $playertarget->getMaxHealth());
+                            $form->addSlider("Set player's movement speed", 0, $max, 1, intval($playertarget->getMovementSpeed()));
+                            $form->addInput("Set player's name tag (the name ontop of the player)", "Enter player's new name tag", $playertarget->getNameTag());
+                            $form->addToggle("Set player's nametag always visible", $playertarget->isNameTagAlwaysVisible());
+                            $form->addToggle("Set player's nametag visible", $playertarget->isNameTagVisible());
+                            $form->addSlider("Set player's on fire attribute", 0, $max, 1, 0);
+                            $form->addSlider("Set player's scale", 0, 5, 1, intval($playertarget->getScale()));
+                            $form->addToggle("Set player's on silent", $playertarget->isSilent());
+                            $form->addToggle("Set player's on sneaking mode", $playertarget->isSneaking());
+                            $form->addToggle("Set player's on sprinting mode", $playertarget->isSprinting());
+                            $form->addToggle("Set player's on swimming mode", $playertarget->isSwimming());
+                            $player->sendForm($form);
+                            return $form;
                     }
-                    $form->setButton1("Yes");
-                    $form->setButton2("No");
-                    $player->sendForm($form);
                 });
                 $form->setTitle($playertarget->getName(). "'s Attributes");
-                $form->addSlider("Set player's absorption", 0, $max, 1, intval($playertarget->getAbsorption()));
-                $form->addSlider("Set player's air supply ticks", 0, $playertarget->getMaxAirSupplyTicks(), 1, $playertarget->getAirSupplyTicks());
-                $form->addToggle("Set player's autojump", $playertarget->hasAutoJump());
-                $form->addToggle("Set player is breathing", $playertarget->isBreathing());
-                $form->addToggle("Set player can climb", $playertarget->canClimb());
-                $form->addToggle("Set player can climb walls", $playertarget->canClimbWalls());
-                $form->addInput("Set player's display name", "Enter player's new display name", $playertarget->getDisplayName());
-                $form->addSlider("Set player's fire tick", 0, $max, 1, $playertarget->getFireTicks());
-                $form->addDropdown("Set player's gamemode", ["Adventure", "Survival", "Creative", "Spectator"], $gamemodes2[strtolower($playertarget->getGamemode()->name())]);
-                $form->addToggle("Set player is glidng", $playertarget->isGliding());
-                $form->addSlider("Set player's gravity", 0, $max, 1, intval($playertarget->getGravity()));
-                $form->addToggle("Set player has gravity", $playertarget->hasGravity());
-                $form->addSlider("Set player's health", 0, $playertarget->getMaxHealth(), 1, intval($playertarget->getHealth()));
-                $form->addToggle("Set player is invisible", $playertarget->isInvisible());
-                $form->addSlider("Set player's max air supply ticks", 1, $max, 1, $playertarget->getMaxAirSupplyTicks());
-                $form->addSlider("Set player's max health", 0, $max, 1, $playertarget->getMaxHealth());
-                $form->addSlider("Set player's movement speed", 0, $max, 1, intval($playertarget->getMovementSpeed()));
-                $form->addInput("Set player's name tag (the name ontop of the player)", "Enter player's new name tag", $playertarget->getNameTag());
-                $form->addToggle("Set player's nametag always visible", $playertarget->isNameTagAlwaysVisible());
-                $form->addToggle("Set player's nametag visible", $playertarget->isNameTagVisible());
-                $form->addSlider("Set player's on fire attribute", 0, $max, 1, 0);
-                $form->addSlider("Set player's scale", 0, 5, 1, intval($playertarget->getScale()));
-                $form->addToggle("Set player's on silent", $playertarget->isSilent());
-                $form->addToggle("Set player's on sneaking mode", $playertarget->isSneaking());
-                $form->addToggle("Set player's on sprinting mode", $playertarget->isSprinting());
-                $form->addToggle("Set player's on swimming mode", $playertarget->isSwimming());
-                $player->sendForm($form);
-                return $form;
+                $form->setContent("Select an action to continue");
+                $form->addButton(TF::colorize("Get Attributes\n&lGets player's attributes"));
+                $form->addButton("Change Attributes\n&lChange player's attributes");
             default:
                 $player->sendMessage(TF::colorize("&cERROR: Unknown category: " .$category. ". Available category are: " .implode(", ", $this::PLAYER_MANAGE_CATEGORY)));
             break;
