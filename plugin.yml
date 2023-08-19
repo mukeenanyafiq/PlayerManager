@@ -5,13 +5,12 @@ main: mukeenanyafiq\PlayerManager\Main
 api: 5.0.0
 author: "mukeenanyafiq"
 commands:
-  playermanager:
+  plmanager:
     description: "Opens a PlayerManager form"
-    usage: "/playermanager or /playermanager info <player>"
-    permission: playermanager.command.playermanager
-    aliases: ['pmanager']
+    usage: "/plmanager or /plmanager info <player>"
+    permission: playermanager.command.plmanager
 
 permissions:
-  playermanager.command.playermanager:
+  playermanager.command.plmanager:
     default: op
     description: "Allows user/player to open PlayerManager form"
