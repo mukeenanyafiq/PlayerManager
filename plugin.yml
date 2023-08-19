@@ -1,0 +1,17 @@
+name: "PlayerManager"
+description: "A plugin that allows players to obtain player's data and also managing a player!"
+version: 1.0.0
+main: mukeenanyafiq\PlayerManager\Main
+api: 5.0.0
+author: "mukeenanyafiq"
+commands:
+  playermanager:
+    description: "Opens a PlayerManager form"
+    usage: "/playermanager or /playermanager info <player>"
+    permission: playermanager.command.playermanager
+    aliases: ['pmanager']
+
+permissions:
+  playermanager.command.playermanager:
+    default: op
+    description: "Allows user/player to open PlayerManager form"
