@@ -81,10 +81,6 @@ class Main extends PluginBase implements Listener {
 
     private const FORMTITLE = "PlayerManager";
 
-    public function parseIniFile(string $filename): array|bool {
-        return parse_ini_file($filename);
-    }
-
     public function onLoad(): void {
         $this->getLogger()->info("Plugin loaded");
     }
@@ -246,31 +242,34 @@ class Main extends PluginBase implements Listener {
                         foreach ($this->getServer()->getOnlinePlayers() as $value) {
                             $clientData = $value->getPlayerInfo()->getExtraData();
 
-                            if (strtolower($this->firstplacetypechoosen) === "model") {
-                                $form->addButton(TF::colorize($value->getName(). "\n&l" .$clientData["DeviceModel"]));
-                            } elseif (strtolower($this->firstplacetypechoosen) === "os") {
-                                $form->addButton(TF::colorize($value->getName(). "\n&l" .$os[$clientData["DeviceOS"]]));
-                            } elseif (strtolower($this->firstplacetypechoosen) === "ip") {
-                                $form->addButton(TF::colorize($value->getName(). "\n&l" .$value->getNetworkSession()->getIp()));
-                            } elseif (strtolower($this->firstplacetypechoosen) === "port") {
-                                $form->addButton(TF::colorize($value->getName(). "\n&l" .$value->getNetworkSession()->getPort()));
-                            } elseif (strtolower($this->firstplacetypechoosen) === "ping") {
-                                $form->addButton(TF::colorize($value->getName(). "\n&l" .$value->getNetworkSession()->getPing(). 'ms'));
-                            } elseif (strtolower($this->firstplacetypechoosen) === "ui") {
-                                $form->addButton(TF::colorize($value->getName(). "\n&l" .$UI[$clientData["UIProfile"]]));
-                            } elseif (strtolower($this->firstplacetypechoosen) === "gui") {
-                                $form->addButton(TF::colorize($value->getName(). "\n&l" .$GUI[$clientData["GuiScale"]]));
-                            } elseif (strtolower($this->firstplacetypechoosen) === "controls") {
-                                $form->addButton(TF::colorize($value->getName(). "\n&l" .$Controls[$clientData["CurrentInputMode"]]));
-                            } elseif (strtolower($this->firstplacetypechoosen) === "uuid") {
-                                $form->addButton(TF::colorize($value->getName(). "\n&l" .$value->getUniqueId()));
-                            } elseif (strtolower($this->firstplacetypechoosen) === "health") {
-                                $form->addButton(TF::colorize($value->getName(). "\n&l" .$value->getHealth(). " HP"));
-                            } elseif (strtolower($this->firstplacetypechoosen) === "position") {
-                                $form->addButton(TF::colorize($value->getName(). "\n&lX: " .$value->getPosition()->getFloorX(). " Y: " .$value->getPosition()->getFloorY(). " Z: " .$value->getPosition()->getFloorZ()));
-                            } elseif (strtolower($this->firstplacetypechoosen) === "gamemode") {
-                                $form->addButton(TF::colorize($value->getName(). "\n&l" .$value->getGamemode()->name()));
-                            } 
+                            switch (strtolower($this->firstplacetypechoosen)) {
+                                case "model":
+                                    $form->addButton(TF::colorize($value->getName(). "\n&l" .$clientData["DeviceModel"]));
+                                case "os":
+                                    $form->addButton(TF::colorize($value->getName(). "\n&l" .$os[$clientData["DeviceOS"]]));
+                                case "ip":
+                                    $form->addButton(TF::colorize($value->getName(). "\n&l" .$value->getNetworkSession()->getIp()));
+                                case "port":
+                                    $form->addButton(TF::colorize($value->getName(). "\n&l" .$value->getNetworkSession()->getPort()));
+                                case "ping":
+                                    $form->addButton(TF::colorize($value->getName(). "\n&l" .$value->getNetworkSession()->getPing(). 'ms'));
+                                case "ui":
+                                    $form->addButton(TF::colorize($value->getName(). "\n&l" .$UI[$clientData["UIProfile"]]));
+                                case "gui":
+                                    $form->addButton(TF::colorize($value->getName(). "\n&l" .$GUI[$clientData["GuiScale"]]));
+                                case "controls":
+                                    $form->addButton(TF::colorize($value->getName(). "\n&l" .$Controls[$clientData["CurrentInputMode"]]));
+                                case "uuid":
+                                    $form->addButton(TF::colorize($value->getName(). "\n&l" .$value->getUniqueId()));
+                                case "health":
+                                    $form->addButton(TF::colorize($value->getName(). "\n&l" .$value->getHealth(). " HP"));
+                                case "position":
+                                    $form->addButton(TF::colorize($value->getName(). "\n&lX: " .$value->getPosition()->getFloorX(). " Y: " .$value->getPosition()->getFloorY(). " Z: " .$value->getPosition()->getFloorZ()));
+                                case "gamemode":
+                                    $form->addButton(TF::colorize($value->getName(). "\n&l" .$value->getGamemode()->getTranslatableName()->getText()));
+                                default:
+                                    $form->addButton(TF::colorize($value->getName(). "\n&l" .$clientData["DeviceModel"]));
+                            }
                         }
                         $player->sendForm($form);
                         return $form;
