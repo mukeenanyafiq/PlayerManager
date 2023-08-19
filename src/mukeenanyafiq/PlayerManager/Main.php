@@ -108,7 +108,7 @@ class Main extends PluginBase implements Listener {
 
     public function onCommand(CommandSender $commandSender, Command $command, string $commandLabel, array $args): bool {
         switch ($command->getName()) {
-            case "playermanager" or "pmanager":
+            case "playermanager":
                 if (!$commandSender->hasPermission("playermanager.command.playermanager")) {
                     $commandSender->sendMessage("This command is only intended for operators!");
                     return true;
@@ -646,11 +646,15 @@ class Main extends PluginBase implements Listener {
                     "spectator" => 3
                 ];
 
-                $max = 255;
+                $max = 500;
 
                 $form = new CustomForm(function (Player $player, $data = null) use ($playertarget, $gamemodes) {
                     if ($data === null) {
                         return true;
+                    }
+
+                    if (is_null($data[0])) {
+                        $data[0] = $playertarget->getAbsorption();
                     }
 
                     $playertarget->setAbsorption($data[0]);
