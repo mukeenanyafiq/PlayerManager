@@ -115,6 +115,18 @@ class Main extends PluginBase implements Listener {
                 }
 
                 if (isset($args[0])) {
+                    if (!in_array($args[0], $this::AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER)) {
+                        if ($commandSender instanceof Player) {
+                            $commandSender->sendMessage(TF::colorize("&cERROR: Invalid argument '" .$args[0]. "'. If you want to open player information, you may aswell try /plmanager info <player>"));
+                            $commandSender->sendMessage("Available argument: " .implode(", ", $this::AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER));
+                            return true;
+                        } else {
+                            $commandSender->sendMessage(TF::colorize("&cERROR: Invalid argument '" .$args[0]. "'."));
+                            $commandSender->sendMessage("Available argument ('reload' is the only argument that is usable from everywhere): " .implode(", ", $this::AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER));
+                            return true;
+                        }
+                    }
+
                     if ($args[0] === "reload") {
                         $this->getConfig()->reload();
                         $commandSender->sendMessage(TF::colorize("&aConfiguration file (config.yml) has been reloaded."));
@@ -133,7 +145,11 @@ class Main extends PluginBase implements Listener {
                             }
                         }
                         if (in_array($commandSender->getName(), $this->getConfig()->get("blacklist"))) {
-                            $commandSender->sendMessage(TF::colorize("&cUnfortunately, you are in the list of blacklisted players from using PlayerManager form. This means &lyou can't use PlayerManager form anymore."));
+                            if ($commandSender->getName() === "CONSOLE") {
+                                $commandSender->sendMessage(TF::colorize("&cIt's useless to blacklist Console. Console can't open forms."));
+                            } else {
+                                $commandSender->sendMessage(TF::colorize("&cUnfortunately, you are in the list of blacklisted players from using PlayerManager form. This means &lyou can't use PlayerManager form anymore."));
+                            }
                         }
                         return true;
                     }
@@ -182,7 +198,12 @@ class Main extends PluginBase implements Listener {
                     $this->openPlayerInformationPage($player, $args[1]);
                 break;
                 
-                case "session":
+                case $args[0]:
+                    if (!in_array($args[0], $this::AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER)) {
+                        $player->sendMessage(TF::colorize("&cERROR: Invalid argument '" .$args[0]. "'. If you want to open player information, you may aswell try /plmanager info <player>"));
+                        $player->sendMessage("Available argument: " .implode(", ", $this::AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER));
+                    }
+
                     if (!isset($args[1])) {
                         $player->sendMessage(TF::colorize("&cERROR: No player name was put. Please put the player's name! (TIP: you can use @s to indicate yours)"));
                         return false;
@@ -199,49 +220,6 @@ class Main extends PluginBase implements Listener {
                     }
     
                     $this->openPlayerManageCategory($player, "session", $args[1]);
-                break;
-
-                case "ability":
-                    if (!isset($args[1])) {
-                        $player->sendMessage(TF::colorize("&cERROR: No player name was put. Please put the player's name! (TIP: you can use @s to indicate yours)"));
-                        return false;
-                    }
-    
-                    if ($args[1] === "@s") {
-                        $this->openPlayerManageCategory($player, "ability", $player->getName());
-                        return true;
-                    }
-
-                    if (!$this->getServer()->getPlayerExact($args[1])) {
-                        $player->sendMessage(TF::colorize("&cERROR: No player with the name &f" .$args[0]. "&c is online"));
-                        return false;
-                    }
-    
-                    $this->openPlayerManageCategory($player, "ability", $args[1]);
-                break;
-
-                case "attributes":
-                    if (!isset($args[1])) {
-                        $player->sendMessage(TF::colorize("&cERROR: No player name was put. Please put the player's name! (TIP: you can use @s to indicate yours)"));
-                        return false;
-                    }
-    
-                    if ($args[1] === "@s") {
-                        $this->openPlayerManageCategory($player, "attributes", $player->getName());
-                        return true;
-                    }
-
-                    if (!$this->getServer()->getPlayerExact($args[1])) {
-                        $player->sendMessage(TF::colorize("&cERROR: No player with the name &f" .$args[0]. "&c is online"));
-                        return false;
-                    }
-    
-                    $this->openPlayerManageCategory($player, "attributes", $args[1]);
-                break;
-
-                default:
-                    $player->sendMessage(TF::colorize("&cERROR: Invalid argument '" .$args[0]. "'. If you want to open player information, you may aswell try /playermanager info <player>"));
-                    $player->sendMessage("Available argument: " .implode(", ", $this::AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER));
                 break;
             }
         } else {

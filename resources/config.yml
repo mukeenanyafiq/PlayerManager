@@ -19,7 +19,7 @@
 # Support case insensitive so even if you're still inputting the type with some upper case words, it would still work. (ex: "Model", "oS")
 firstplace: model
 
-# "blacklist" - List of players that won't be able to access /playermanager command
+# "blacklist" - List of players that won't be able to access PlayerManager form
 # Put the player's username in the list to blacklist them
 blacklist: []
 ...
