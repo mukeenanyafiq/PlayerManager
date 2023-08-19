@@ -49,20 +49,7 @@ class Main extends PluginBase implements Listener {
         "gamemode" => 11
     ];
     
-    public const FIRST_PLACE_TYPE_EXTRA2 = [
-        0 => "model", 
-        1 => "os", 
-        2 => "ip", 
-        3 => "port", 
-        4 => "ping", 
-        5 => "ui", 
-        6 => "gui", 
-        7 => "controls", 
-        8 => "uuid", 
-        9 => "health", 
-        10 => "position",
-        11 => "gamemode"
-    ];
+    public const FIRST_PLACE_TYPE_EXTRA2 = array_flip($this::FIRST_PLACE_TYPE_EXTRA);
 
     public const PLAYER_MANAGE_CATEGORY = [
         "session",
@@ -77,7 +64,6 @@ class Main extends PluginBase implements Listener {
         "ability",
         "attributes"
     ];
-
 
     public $firstplacetypechoosen = "";
 
@@ -475,12 +461,17 @@ class Main extends PluginBase implements Listener {
                 case 1:
                     $this->openPlayerManageCategory($player, "ability", $target);
                 break;
+                
+                case 2:
+                    $this->openPlayerManageCategory($player, "attributes", $target);
+                break;
             }
         });
         $form->setTitle($playerchoosen->getName());
         $form->setContent(TF::colorize("&aDisplay Name: &f" .$playerchoosen->getDisplayName(). "\n&aModel: &f" .$clientdata["DeviceModel"]. "\n&aOS: &f" .$os[$clientdata["DeviceOS"]]. "\n&aIP: &f" .$playerchoosen->getNetworkSession()->getIp(). "\n&aPort: &f" .$playerchoosen->getNetworkSession()->getPort(). "\n&aPing: &f" .$playerchoosen->getNetworkSession()->getPing(). "ms\n&aUI: &f" .$UI[$clientdata["UIProfile"]]. "\n&aGUI Scale: &f" .$GUI[$clientdata["GuiScale"]]. "\n&aControls: &f" .$Controls[$clientdata["CurrentInputMode"]]. "\n&aUUID: &f" .$playerchoosen->getUniqueId(). "\n&aHealth: &f" .$playerchoosen->getHealth(). " HP\n&aPosition: &fX: " .$playerchoosen->getPosition()->getFloorX() . ", Y: " .$playerchoosen->getPosition()->getFloorY() . ", Z: " .$playerchoosen->getPosition()->getFloorZ(). "\n&aGamemode: &f" .$playerchoosen->getGamemode()->name()));
         $form->addButton(TF::colorize("Session\n&lPlayer's session"));
         $form->addButton(TF::colorize("Ability\n&lPlayer's ability"));
+        $form->addButton(TF::colorize("Attributes\n&lPlayer's attributes"));
         $player->sendForm($form);
         return $form;
     }
@@ -638,12 +629,7 @@ class Main extends PluginBase implements Listener {
                     3 => "spectator"
                 ];
 
-                $gamemodes2 = [
-                    "adventure" => 0, 
-                    "survival" => 1, 
-                    "creative" => 2, 
-                    "spectator" => 3
-                ];
+                $gamemodes2 = array_flip($gamemodes);
 
                 $max = 300;
 
@@ -659,6 +645,10 @@ class Main extends PluginBase implements Listener {
 
                         switch ($d2) {
                             case 0:
+                                $player->sendMessage("The action has been canceled.");
+                            break;
+
+                            case 1:
                                 $playertarget->setAbsorption(floatval($data[0]));
                                 $playertarget->setAirSupplyTicks(intval($data[1]));
                                 $playertarget->setAutoJump($data[2]);
@@ -687,13 +677,9 @@ class Main extends PluginBase implements Listener {
                                 $playertarget->setSwimming($data[25]);
                                 $player->sendMessage(TF::colorize("&a" .$playertarget->getName(). "'s attributes successfully changed!"));
                             break;
-
-                            case 1:
-                                $player->sendMessage("The action has been canceled.");
-                            break;
                         }
                     });
-                    $form->setTitle($this::FORMTITLE. " - Attribute Change Confirmation");
+                    $form->setTitle($this::FORMTITLE. " - Confirmation");
                     if ($playertarget->getName() === $player->getName()) {
                         $form->setContent("Are you sure you want to keep changing your attribute? This change could be a mess and there is no way to revert it back unless you remembered/saved the attributes!");
                     } else {
