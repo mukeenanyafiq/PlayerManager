@@ -107,7 +107,7 @@ class Main extends PluginBase implements Listener {
 
     public function onCommand(CommandSender $commandSender, Command $command, string $commandLabel, array $args): bool {
         switch ($command->getName()) {
-            case "playermanager" || "pmanager":
+            case "playermanager" or "pmanager":
                 if (!$commandSender->hasPermission("playermanager.command.playermanager")) {
                     $commandSender->sendMessage("This command is only intended for operators!");
                     return true;
