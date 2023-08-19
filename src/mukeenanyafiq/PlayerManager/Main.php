@@ -123,7 +123,7 @@ class Main extends PluginBase implements Listener {
                             $this->firstplacetypechoosen = "model";
                         } else {
                             $this->firstplacetypechoosen = $this->getConfig()->get("firstplace");
-                        }
+                        } 
                         if (count($this->getConfig()->get("blacklist")) > 0) {
                             if (count($this->getConfig()->get("blacklist")) === 1) {
                                 $this->getLogger()->info("There are " .count($this->getConfig()->get("blacklist")). " blacklisted player from using PlayerManager form: " .implode(", ", $this->getConfig()->get("blacklist")));
