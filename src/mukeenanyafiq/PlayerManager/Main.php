@@ -99,10 +99,6 @@ class Main extends PluginBase implements Listener {
         }
     }
 
-    public function getLanguageString(string $string) {
-        return $this->pluginlanguage[$string];
-    }
-
     public function onCommand(CommandSender $commandSender, Command $command, string $commandLabel, array $args): bool {
         switch ($command->getName()) {
             case "plmanager":
