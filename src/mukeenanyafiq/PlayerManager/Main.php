@@ -654,10 +654,6 @@ class Main extends PluginBase implements Listener {
                         return true;
                     }
 
-                    if (is_null($data[0])) {
-                        $data[0] = $playertarget->getAbsorption();
-                    }
-
                     $playertarget->setAbsorption(floatval($data[0]));
                     $playertarget->setAirSupplyTicks($data[1]);
                     $playertarget->setAutoJump($data[2]);
