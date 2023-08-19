@@ -30,7 +30,7 @@ Such as:
 - `/plmanager attributes <player>` - Opening player's attributes
 - `/plmanager reload` - Reloads PlayerManager's configuration file
 
-You can change the `<player>` argument to any player name\
+You can change the `<player>` argument to any online player name\
 (You can use `@s` as the player argument to indicate you)\
 (Example: `/plmanager info @s`)
 
