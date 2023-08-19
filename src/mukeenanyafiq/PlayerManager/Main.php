@@ -66,12 +66,6 @@ class Main extends PluginBase implements Listener {
 
     private const FORMTITLE = "PlayerManager";
 
-    private const SUPPORTED_LANGUAGE_LIST = [
-        "eng"
-    ];
-
-    private $pluginlanguage;
-
     public function onLoad(): void {
         $this->getLogger()->info("Plugin loaded");
     }
