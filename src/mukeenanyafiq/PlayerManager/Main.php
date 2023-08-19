@@ -625,7 +625,7 @@ class Main extends PluginBase implements Listener {
                 });
                 $form->setTitle($playertarget->getName(). "'s Ability");
                 $form->setContent("Select an action to continue");
-                $form->addButton(TF::coloriz("Enable Fly\n&lAllows player to fly"));
+                $form->addButton(TF::colorize("Enable Fly\n&lAllows player to fly"));
                 $form->addButton(TF::colorize("Enable No-Clip\n&lAllows player to no-clip"));
                 $form->addButton(TF::colorize("Disable Fly\n&lDisable ability fly"));
                 $form->addButton(TF::colorize("Disable No-Clip\n&lDisable ability no-clip"));
@@ -657,7 +657,7 @@ class Main extends PluginBase implements Listener {
                         $data[0] = $playertarget->getAbsorption();
                     }
 
-                    $playertarget->setAbsorption($data[0]);
+                    $playertarget->setAbsorption(floatval($data[0]));
                     $playertarget->setAirSupplyTicks($data[1]);
                     $playertarget->setAutoJump($data[2]);
                     $playertarget->setBreathing($data[3]);
@@ -668,18 +668,18 @@ class Main extends PluginBase implements Listener {
                     $playertarget->setFireTicks($data[8]);
                     $playertarget->setGamemode(GameMode::fromString($gamemodes[$data[9]]));
                     $playertarget->setGliding($data[10]);
-                    $playertarget->setGravity($data[11]);
+                    $playertarget->setGravity(floatval($data[11]));
                     $playertarget->setHasGravity($data[12]);
-                    $playertarget->setHealth($data[13]);
+                    $playertarget->setHealth(floatval($data[13]));
                     $playertarget->setInvisible($data[14]);
                     $playertarget->setMaxAirSupplyTicks($data[15]);
                     $playertarget->setMaxHealth($data[16]);
-                    $playertarget->setMovementSpeed($data[17]);
+                    $playertarget->setMovementSpeed(floatval($data[17]));
                     $playertarget->setNameTag($data[18]);
                     $playertarget->setNameTagAlwaysVisible($data[19]);
                     $playertarget->setNameTagVisible($data[21]);
                     $playertarget->setOnFire($data[22]);
-                    $playertarget->setScale($data[23]);
+                    $playertarget->setScale(floatval($data[23]));
                     $playertarget->setSilent($data[24]);
                     $playertarget->setSneaking($data[25]);
                     $playertarget->setSprinting($data[26]);
