@@ -12,11 +12,10 @@ use mukeenanyafiq\FormAPI\ModalForm;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\event\Listener;
-use pocketmine\lang\Language;
 use pocketmine\lang\Translatable;
+use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
-use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat as TF;
 
 class Main extends PluginBase implements Listener {
@@ -67,13 +66,15 @@ class Main extends PluginBase implements Listener {
 
     public const PLAYER_MANAGE_CATEGORY = [
         "session",
-        "ability"
+        "ability",
+        "attributes"
     ];
 
     public const AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER = [
         "info",
         "session",
-        "ability"
+        "ability",
+        "attributes"
     ];
 
     public $firstplacetypechoosen = "";
@@ -217,6 +218,25 @@ class Main extends PluginBase implements Listener {
                     }
     
                     $this->openPlayerManageCategory($player, "ability", $args[1]);
+                break;
+
+                case "attributes":
+                    if (!isset($args[1])) {
+                        $player->sendMessage(TF::colorize("&cERROR: No player name was put. Please put the player's name! (TIP: you can use @s to indicate yours)"));
+                        return false;
+                    }
+    
+                    if ($args[1] === "@s") {
+                        $this->openPlayerManageCategory($player, "attributes", $player->getName());
+                        return true;
+                    }
+
+                    if (!$this->getServer()->getPlayerExact($args[1])) {
+                        $player->sendMessage(TF::colorize("&cERROR: No player with the name &f" .$args[0]. "&c is online"));
+                        return false;
+                    }
+    
+                    $this->openPlayerManageCategory($player, "attributes", $args[1]);
                 break;
 
                 default:
@@ -609,6 +629,62 @@ class Main extends PluginBase implements Listener {
                 $form->addButton(TF::colorize("Enable No-Clip\n&lAllows player to no-clip"));
                 $form->addButton(TF::colorize("Disable Fly\n&lDisable ability fly"));
                 $form->addButton(TF::colorize("Disable No-Clip\n&lDisable ability no-clip"));
+                $player->sendForm($form);
+                return $form;
+            case "attributes":
+                $gamemodes = [
+                    0 => "adventure", 
+                    1 => "survival", 
+                    2 => "creative", 
+                    3 => "spectator"
+                ];
+
+                $gamemodes2 = [
+                    "adventure" => 0, 
+                    "survival" => 1, 
+                    "creative" => 2, 
+                    "spectator" => 3
+                ];
+
+                $form = new CustomForm(function (Player $player, $data = null) use ($playertarget, $gamemodes) {
+                    if ($data === null) {
+                        return true;
+                    }
+
+                    $gameMode = GameMode::fromString($gamemodes[$data[9]]);
+
+                    $playertarget->setAbsorption($data[0]);
+                    $playertarget->setAirSupplyTicks($data[1]);
+                    $playertarget->setAutoJump($data[2]);
+                    $playertarget->setBreathing($data[3]);
+                    $playertarget->setCanClimb($data[4]);
+                    $playertarget->setCanClimbWalls($data[5]);
+                    $playertarget->setCanSaveWithChunk($data[6]);
+                    $playertarget->setDisplayName($data[7]);
+                    $playertarget->setFireTicks($data[8]);
+                    $playertarget->setGamemode($gameMode);
+                    $playertarget->setGliding($data[10]);
+                    $playertarget->setGravity($data[11]);
+                    $playertarget->setHasGravity($data[12]);
+                    $playertarget->setHealth($data[13]);
+                    $playertarget->setInvisible($data[14]);
+                });
+                $form->setTitle($playertarget->getName(). "'s Attributes");
+                $form->addSlider("Set player's absorption", 1, 255, 1, intval($playertarget->getAbsorption()));
+                $form->addSlider("Set player's air supply ticks", 1, 255, 1, $playertarget->getAirSupplyTicks());
+                $form->addToggle("Set player's autojump", $playertarget->hasAutoJump());
+                $form->addToggle("Set player is breathing", $playertarget->isBreathing());
+                $form->addToggle("Set player can climb", $playertarget->canClimb());
+                $form->addToggle("Set player can climb walls", $playertarget->canClimbWalls());
+                $form->addToggle("Set player can be saved with chunk", $playertarget->canSaveWithChunk());
+                $form->addInput("Set player's display name", "Enter player's display name", $playertarget->getDisplayName());
+                $form->addSlider("Set player's fire tick", 1, 255, 1, $playertarget->getFireTicks());
+                $form->addDropdown("Set player's gamemode", ["Adventure", "Survival", "Creative", "Spectator"], $gamemodes2[strtolower($playertarget->getGamemode()->name())]);
+                $form->addToggle("Set player is glidng", $playertarget->isGliding());
+                $form->addSlider("Set player's gravity", 1, 255, 1, intval($playertarget->getGravity()));
+                $form->addToggle("Set player has gravity", $playertarget->hasGravity());
+                $form->addSlider("Set player's health", 0, $playertarget->getMaxHealth(), 1, intval($playertarget->getHealth()));
+                $form->addToggle("Set player is invisible", $playertarget->isInvisible());
                 $player->sendForm($form);
                 return $form;
             default:
