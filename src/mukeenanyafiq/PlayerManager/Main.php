@@ -9,6 +9,7 @@ use mukeenanyafiq\FormAPI\SimpleForm;
 use mukeenanyafiq\FormAPI\CustomForm;
 use mukeenanyafiq\FormAPI\ModalForm;
 
+use pocketmine\color\Color;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\effect\EffectInstance;
@@ -53,7 +54,8 @@ class Main extends PluginBase implements Listener {
     public const PLAYER_MANAGE_CATEGORY = [
         "session",
         "ability",
-        "attributes"
+        "attributes",
+        "effects"
     ];
 
     public const AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER = [
@@ -61,7 +63,8 @@ class Main extends PluginBase implements Listener {
         "reload",
         "session",
         "ability",
-        "attributes"
+        "attributes",
+        "effects"
     ];
 
     public $firstplacetypechoosen = "";
@@ -442,6 +445,10 @@ class Main extends PluginBase implements Listener {
                 case 2:
                     $this->openPlayerManageCategory($player, "attributes", $target);
                 break;
+                
+                case 3:
+                    $this->openPlayerManageCategory($player, "effects", $target);
+                break;
             }
         });
         $form->setTitle($playerchoosen->getName());
@@ -449,6 +456,7 @@ class Main extends PluginBase implements Listener {
         $form->addButton(TF::colorize("Session\n&lPlayer's session"));
         $form->addButton(TF::colorize("Ability\n&lPlayer's ability"));
         $form->addButton(TF::colorize("Attributes\n&lPlayer's attributes"));
+        $form->addButton(TF::colorize("Effects\n&lPlayer's effects"));
         $player->sendForm($form);
         return $form;
     }
@@ -617,8 +625,11 @@ class Main extends PluginBase implements Listener {
 
                     switch ($data) {
                         case 0:
-                            $player->sendMessage($playertarget->getName(). "'s attributes - " .$this::FORMTITLE);
-                            $player->sendMessage("Absorption: " .$playertarget->getAbsorption(). "\nAir Supply Ticks: " .$playertarget->getAirSupplyTicks(). "\nHas Auto Jump: " .$playertarget->hasAutoJump(). "\nIs Breathing: " .$playertarget->isBreathing(). "\nCan Climb: " .$playertarget->canClimb(). "\nCan Climb Walls: " .$playertarget->canClimbWalls(). "\nDisplay Name: " .$playertarget->getDisplayName(). "\nFire Ticks: " .$playertarget->getFireTicks(). "\nGamemode: " .$playertarget->getGamemode()->name(). "\nIs Gliding: " .$playertarget->isGliding(). "\nGravity: " .$playertarget->getGravity(). "\nHas Gravity: " .$playertarget->hasGravity(). "Health: " .$playertarget->getHealth(). " HP\nIs Invisible: " .$playertarget->isInvisible(). "\nMaximum Air Supply Ticks: " .$playertarget->getMaxAirSupplyTicks(). "\nMaximum Health: " .$playertarget->getMaxHealth(). "\nMovement Speed: " .$playertarget->getMovementSpeed(). "\nName Tag: " .$playertarget->getNameTag(). "\nIs Name Tag Always Visible: " .$playertarget->isNameTagAlwaysVisible(). "\nIs Name Tag Visible: " .$playertarget->isNameTagVisible(). "\nOn Fire For: " .$playertarget->isOnFire(). " seconds\nScale: " .$playertarget->getScale(). "\nIs Silent: " .$playertarget->isSilent(). "\nIs Sneaking: " .$playertarget->isSneaking(). "\nIs Sprinting: " .$playertarget->isSprinting(). "\nIs Swimming: " .$playertarget->isSwimming());
+                            $player->sendMessage("==== " .$playertarget->getName(). "'s attributes - " .$this::FORMTITLE. " ====");
+                            $player->sendMessage(TF::colorize("&aAbsorption: &f" .$playertarget->getAbsorption(). "\n&aAir Supply Ticks: &f" .$playertarget->getAirSupplyTicks(). "\n&aHas Auto Jump: &f" .$playertarget->hasAutoJump(). "\n&aIs Breathing: &f" .$playertarget->isBreathing(). "\n&aCan Climb: &f" .$playertarget->canClimb(). "\n&aCan Climb Walls: &f" .$playertarget->canClimbWalls(). "\n&aDisplay Name: &f" .$playertarget->getDisplayName(). "\n&aFire Ticks: &f" .$playertarget->getFireTicks(). "\n&aGamemode: &f" .$playertarget->getGamemode()->name(). "\n&aIs Gliding: &f" .$playertarget->isGliding(). "\n&aGravity: &f" .$playertarget->getGravity(). "\n&aHas Gravity: &f" .$playertarget->hasGravity(). "\n&aHealth: &f" .$playertarget->getHealth(). " HP\n&aIs Invisible: &f" .$playertarget->isInvisible(). "\n&aMaximum Air Supply Ticks: &f" .$playertarget->getMaxAirSupplyTicks(). "\n&aMaximum Health: &f" .$playertarget->getMaxHealth(). "\n&aMovement Speed: &f" .$playertarget->getMovementSpeed(). "\n&aName Tag: &f" .$playertarget->getNameTag(). "\n&aIs Name Tag Always Visible: &f" .$playertarget->isNameTagAlwaysVisible(). "\n&aIs Name Tag Visible: &f" .$playertarget->isNameTagVisible(). "\n&aOn Fire For: &f" .$playertarget->isOnFire(). " seconds\n&aScale: &f" .$playertarget->getScale(). "\n&aIs Silent: &f" .$playertarget->isSilent(). "\n&aIs Sneaking: &f" .$playertarget->isSneaking(). "\n&aIs Sprinting: &f" .$playertarget->isSprinting(). "\n&aIs Swimming: &f" .$playertarget->isSwimming()));
+                            $player->sendMessage("===========================");
+                        break;
+
                         case 1:
                             $form = new CustomForm(function (Player $player, $data = null) use ($playertarget, $gamemodes) {
                                 if ($data === null) {
@@ -762,18 +773,166 @@ class Main extends PluginBase implements Listener {
                             $form->addDropdown("Select an effect to be added to " .$playertarget->getName(), ["Absorption", "Blindness", "Conduit Power", "Darkness", "Fatal Poison", "Fire Resistance", "Haste", "Health Boost", "Hunger", "Instant Damage", "Instant Health", "Invisibility", "Jump Boost", "Levitation", "Mining Fatigue", "Nausea", "Night Vision", "Poison", "Regeneration", "Resistance", "Saturation", "Slowness", "Speed", "Strength", "Water Breathing", "Weakness", "Wither"]);
                             $form->addInput("Put how many duration you want to effect to apply until expired as seconds (optional)", "Number");
                             $form->addSlider("Put how strong the effect that is applied (optional)", 0, 255, 1);
-                            $form->addToggle("Bubble effect is visible to everyone (leave it as true for default)", true);
+                            $form->addToggle("Particle effect is visible to everyone (leave it as true for default)", true);
                             $player->sendForm($form);
                             return $form;
                         case 1:
-                            $form = new SimpleForm(function (Player $player, $data = null) {
+                            $form = new SimpleForm(function (Player $player, $data = null) use ($playertarget) {
+                                if ($data === null) {
+                                    return true;
+                                }
 
+                                switch ($data) {
+                                    case $data:
+                                        $effectchoosen = $playertarget->getEffects()->get(array_values($playertarget->getEffects()->all())[$data]);
+                                        $form = new SimpleForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
+                                            if ($data === null) {
+                                                return true;
+                                            }
+
+                                            switch ($data) {
+                                                case 0:
+                                                    $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
+                                                        if ($data === null) {
+                                                            return true;
+                                                        }
+
+                                                        if ($data[1] === null) {
+                                                            $data[1] = 0;
+                                                        }
+
+                                                        $data[1] = intval($data[1]) * 20;
+                                                        $effectchoosen->decreaseDuration($data[1]);
+                                                        $player->sendMessage("Successfully decreased duration for effect " .$effectchoosen->getType()->getName()->getText(). " for " .$data[1]. "seconds in the player " .$playertarget->getName(). "!");
+                                                    });
+                                                    $form->setTitle("Decrease Duration");
+                                                    $form->addLabel("Decrease duration will decreasing the duration of the effect so that it expires so quickly");
+                                                    $form->addInput("Put how long the duration decreases by seconds", "Number");
+                                                    $player->sendForm($form);
+                                                    return $form;
+                                                case 1:
+                                                    $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
+                                                        if ($data === null) {
+                                                            return true;
+                                                        }
+
+                                                        $effectchoosen->setAmbient($data[1]);
+                                                        $player->sendMessage("Successfully changed ambient to effect " .$effectchoosen->getType()->getName()->getText(). " as " .$data[1]. " in the player " .$playertarget->getName(). "!");
+                                                    });
+                                                    $form->setTitle("Set Ambient");
+                                                    $form->addLabel("Enabling ambient to an effect will make the effect indicates are from game environment, not from plugin");
+                                                    $form->addToggle("Is the effect from ambient environment", $effectchoosen->isAmbient());
+                                                    $player->sendForm($form);
+                                                    return $form;
+                                                case 2:
+                                                    $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
+                                                        if ($data === null) {
+                                                            return true;
+                                                        }
+
+                                                        $effectchoosen->setAmplifier($data[1]);
+                                                        $player->sendMessage("Successfully changed amplifier for effect " .$effectchoosen->getType()->getName()->getText(). " to " .$data[1]. " in the player " .$playertarget->getName(). "!");
+                                                    });
+                                                    $form->setTitle("Set Amplifier");
+                                                    $form->addLabel("Changes the strength/amplifier of the effect");
+                                                    $form->addSlider("Effect strength/amplifier", 0, 255, 1, $effectchoosen->getAmplifier());
+                                                    $player->sendForm($form);
+                                                    return $form;
+                                                case 3:
+                                                    $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
+                                                        if ($data === null) {
+                                                            return true;
+                                                        }
+
+                                                        $effectchoosen->setColor(new Color($data[1], $data[2], $data[3], $data[4]));
+                                                        $player->sendMessage("Successfully changed color for effect " .$effectchoosen->getType()->getName()->getText(). "to R:" .$data[1]. " G: " .$data[2]. " B: " .$data[3]. " A: " .$data[4]. " in the player " .$playertarget->getName(). "!");
+                                                    });
+                                                    $form->setTitle("Set Color");
+                                                    $form->addLabel("Changes the color of the effect");
+                                                    $form->addSlider("R (Red)", 0, 255, 1, $effectchoosen->getColor()->getR());
+                                                    $form->addSlider("G (Green)", 0, 255, 1, $effectchoosen->getColor()->getG());
+                                                    $form->addSlider("B (Blue)", 0, 255, 1, $effectchoosen->getColor()->getB());
+                                                    $form->addSlider("A (Alpha/Transparency)", 0, 255, 1, $effectchoosen->getColor()->getA());
+                                                    $player->sendForm($form);
+                                                    return $form;
+                                                case 4:
+                                                    $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
+                                                        if ($data === null) {
+                                                            return true;
+                                                        }
+
+                                                        if ($data[1] === null) {
+                                                            $data[1] = 0;
+                                                        }
+
+                                                        $data[1] = intval($data[1]) * 20;
+                                                        $effectchoosen->setDuration($data[1]);
+                                                        $player->sendMessage("Successfully decreased duration for effect " .$effectchoosen->getType()->getName()->getText(). " for " .$data[1]. "seconds in the player " .$playertarget->getName(). "!");
+                                                    });
+                                                    $form->setTitle("Set Duration");
+                                                    $form->addLabel("Change remaining duration of the effect");
+                                                    $form->addInput("Put how long the duration by seconds", "Number");
+                                                    $player->sendForm($form);
+                                                    return $form;
+                                                case 5:
+                                                    $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
+                                                        if ($data === null) {
+                                                            return true;
+                                                        }
+
+                                                        $effectchoosen->setVisible($data[1]);
+                                                        $player->sendMessage("Successfully changed visible to particle effect " .$effectchoosen->getType()->getName()->getText(). " as " .$data[1]. " in the player " .$playertarget->getName(). "!");
+                                                    });
+                                                    $form->setTitle("Set Visible");
+                                                    $form->addLabel("Sets whether the effect particle is visible to everyone or nobody including you");
+                                                    $form->addToggle("Is the effect particle visible", $effectchoosen->isVisible());
+                                                    $player->sendForm($form);
+                                                    return $form;
+                                                case 6:
+                                                    $form = new ModalForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
+                                                        if ($data === null) {
+                                                            return true;
+                                                        }
+
+                                                        switch ($data) {
+                                                            case 0:
+                                                                $player->sendMessage("The action has been canceled.");
+                                                            break;
+
+                                                            case 1:
+                                                                $effectchoosen->resetColor();
+                                                                $player->sendMessage(TF::colorize("&aSuccessfully resetted the color of the particle effect!"));
+                                                            break;
+                                                        }
+                                                    });
+                                                    $form->setTitle("Reset Color");
+                                                    $form->setContent("Are you sure you want to reset the effect particle color? The current color of the particle effect (R: " .$effectchoosen->getColor()->getR(). " G: " .$effectchoosen->getColor()->getG(). " B: " .$effectchoosen->getColor()->getB(). " A: " .$effectchoosen->getColor()->getA(). ") will change as soon as you resetted the color. Continue?");
+                                                    $form->setButton1("Yes");
+                                                    $form->setButton2("No");
+                                                    $player->sendForm($form);
+                                                    return $form;
+                                            }
+                                        });
+                                        $form->setTitle($effectchoosen->getType()->getName()->getText());
+                                        $form->setContent(TF::colorize("Information about this applied effect in player " .$playertarget->getName(). ":\n \n&aAmplifier: &f" .$effectchoosen->getAmplifier(). "\n&aColor: &fR: " .$effectchoosen->getColor()->getR(). " G: " .$effectchoosen->getColor()->getG(). " B: " .$effectchoosen->getColor()->getB(). " A: " .$effectchoosen->getColor()->getA(). "\nDuration remaining: " .$effectchoosen->getDuration(). "\nEffect Level: " .$effectchoosen->getEffectLevel(). "\nHas expired: " .$effectchoosen->hasExpired(), "\nIs ambient: " .$effectchoosen->isAmbient(). "\nParticle visible to everyone: " .$effectchoosen->isVisible(). "\n \nWhat do you want to do with this effect?"));
+                                        $form->addButton(TF::colorize("Decrease Duration\n&lDecreases duration"));
+                                        $form->addButton(TF::colorize("Set Ambient\n&lSet effect from ambient"));
+                                        $form->addButton(TF::colorize("Set Amplifier\n&lSet effect's strength"));
+                                        $form->addButton(TF::colorize("Set Color\n&lSet effect's color"));
+                                        $form->addButton(TF::colorize("Set Duration\n&lSet effect's duration"));
+                                        $form->addButton(TF::colorize("Set Visible\n&lSet effect is visible"));
+                                        $form->addButton(TF::colorize("Reset color\n&lReset color to default"));
+                                        $player->sendForm($form);
+                                        return $form;
+                                }
                             });
                             $form->setTitle("Manage Effects");
                             $form->setContent("Select an effect to be managed");
                             foreach ($playertarget->getEffects()->all() as $value) {
-                                $form->addButton($value->getType()->getName()->getText(). "\nDuration left: " .$value->getDuration());
+                                $form->addButton($value->getType()->getName()->getText(). "\n" .$value->getDuration(). " secs left");
                             }
+                            $player->sendForm($form);
+                            return $form;
                     }
                 });
                 $form->setTitle($playertarget->getName(). "'s Effects");
