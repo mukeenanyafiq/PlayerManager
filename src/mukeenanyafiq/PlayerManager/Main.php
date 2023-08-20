@@ -11,6 +11,8 @@ use mukeenanyafiq\FormAPI\ModalForm;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\event\Listener;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
@@ -674,7 +676,7 @@ class Main extends PluginBase implements Listener {
                                 $form->setButton2("No");
                                 $player->sendForm($form);
                             });
-                            $form->setTitle($playertarget->getName(). "'s Attributes");
+                            $form->setTitle("Set " .$playertarget->getName(). "'s Attributes");
                             $form->addSlider("Set player's absorption", 0, $max, 1, intval($playertarget->getAbsorption()));
                             $form->addSlider("Set player's air supply ticks", 0, $playertarget->getMaxAirSupplyTicks(), 1, $playertarget->getAirSupplyTicks());
                             $form->addToggle("Set player's autojump", $playertarget->hasAutoJump());
@@ -708,7 +710,78 @@ class Main extends PluginBase implements Listener {
                 $form->setTitle($playertarget->getName(). "'s Attributes");
                 $form->setContent("Select an action to continue");
                 $form->addButton(TF::colorize("Get Attributes\n&lGets player's attributes"));
-                $form->addButton("Change Attributes\n&lChange player's attributes");
+                $form->addButton(TF::colorize("Change Attributes\n&lChange player's attributes"));
+                $player->sendForm($form);
+                return $form;
+            case "effects":
+                $effectlist = [
+                    0 => VanillaEffects::ABSORPTION(),
+                    1 => VanillaEffects::BLINDNESS(),
+                    2 => VanillaEffects::CONDUIT_POWER(),
+                    3 => VanillaEffects::DARKNESS(),
+                    4 => VanillaEffects::FATAL_POISON(),
+                    5 => VanillaEffects::FIRE_RESISTANCE(),
+                    6 => VanillaEffects::HASTE(),
+                    7 => VanillaEffects::HEALTH_BOOST(),
+                    8 => VanillaEffects::HUNGER(),
+                    9 => VanillaEffects::INSTANT_DAMAGE(),
+                    10 => VanillaEffects::INSTANT_HEALTH(),
+                    11 => VanillaEffects::INVISIBILITY(),
+                    12 => VanillaEffects::JUMP_BOOST(),
+                    13 => VanillaEffects::LEVITATION(),
+                    14 => VanillaEffects::MINING_FATIGUE(),
+                    15 => VanillaEffects::NAUSEA(),
+                    16 => VanillaEffects::NIGHT_VISION(),
+                    17 => VanillaEffects::POISON(),
+                    18 => VanillaEffects::REGENERATION(),
+                    19 => VanillaEffects::RESISTANCE(),
+                    20 => VanillaEffects::SATURATION(),
+                    21 => VanillaEffects::SLOWNESS(),
+                    22 => VanillaEffects::SPEED(),
+                    23 => VanillaEffects::STRENGTH(),
+                    24 => VanillaEffects::WATER_BREATHING(),
+                    25 => VanillaEffects::WEAKNESS(),
+                    26 => VanillaEffects::WITHER()
+                ];
+
+                $form = new SimpleForm(function (Player $player, $data = null) use ($playertarget, $effectlist) {
+                    if ($data === null) {
+                        return true;
+                    }
+
+                    switch ($data) {
+                        case 0:
+                            $form = new CustomForm(function (Player $player, $data = null) use ($playertarget, $effectlist) {
+                                if ($data === null) {
+                                    return true;
+                                }
+                                
+                                $playertarget->getEffects()->add(new EffectInstance($effectlist[$data[0]], intval($data[1]), $data[2], $data[3]));
+                            });
+                            $form->setTitle("Add Effects");
+                            $form->addDropdown("Select an effect to be added to " .$playertarget->getName(), ["Absorption", "Blindness", "Conduit Power", "Darkness", "Fatal Poison", "Fire Resistance", "Haste", "Health Boost", "Hunger", "Instant Damage", "Instant Health", "Invisibility", "Jump Boost", "Levitation", "Mining Fatigue", "Nausea", "Night Vision", "Poison", "Regeneration", "Resistance", "Saturation", "Slowness", "Speed", "Strength", "Water Breathing", "Weakness", "Wither"]);
+                            $form->addInput("Put how many duration you want to effect to apply until expired as seconds (optional)", "Number");
+                            $form->addSlider("Put how strong the effect that is applied (optional)", 0, 255, 1);
+                            $form->addToggle("Bubble effect is visible to everyone (leave it as true for default)", true);
+                            $player->sendForm($form);
+                            return $form;
+                        case 1:
+                            $form = new SimpleForm(function (Player $player, $data = null) {
+
+                            });
+                            $form->setTitle("Manage Effects");
+                            $form->setContent("Select an effect to be managed");
+                            foreach ($playertarget->getEffects()->all() as $value) {
+                                $form->addButton($value->getType()->getName()->getText(). "\nDuration left: " .$value->getDuration());
+                            }
+                    }
+                });
+                $form->setTitle($playertarget->getName(). "'s Effects");
+                $form->setContent("Select an action to continue");
+                $form->addButton(TF::colorize("Add Effect\n&lAdd effect to player"));
+                $form->addButton(TF::colorize("Manage Effects\n&lManage all effects"));
+                $player->sendForm($form);
+                return $form;
             default:
                 $player->sendMessage(TF::colorize("&cERROR: Unknown category: " .$category. ". Available category are: " .implode(", ", $this::PLAYER_MANAGE_CATEGORY)));
             break;
