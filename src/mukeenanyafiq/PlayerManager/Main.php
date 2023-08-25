@@ -767,7 +767,13 @@ class Main extends PluginBase implements Listener {
                                     return true;
                                 }
                                 
-                                $playertarget->getEffects()->add(new EffectInstance($effectlist[$data[0]], intval($data[1]), $data[2], $data[3]));
+                                // Minecraft produces ticks, and a second on real life time equals to 20 ticks.
+                                // Multiplying the real effect seconds by 20 ticks, and the game will acts as the effect seconds was using the real effect seconds.
+                                // If you tried to print $calculated, it will return the real effect seconds that has been multiplied by 20.
+                                $calculated = intval($data[1]) * 20;
+
+                                $playertarget->getEffects()->add(new EffectInstance($effectlist[$data[0]], intval($calculated), $data[2], $data[3]));
+                                $player->sendMessage("Successfully added a new effect " .$effectlist[$data[0]]->getName()->getText(). " to " .$playertarget->getName(). " for " .intval($data[1]). " seconds with amplifier " .$data[2]. " and particle effect visible to everyone set to " .$data[3]. "!");
                             });
                             $form->setTitle("Add Effects");
                             $form->addDropdown("Select an effect to be added to " .$playertarget->getName(), ["Absorption", "Blindness", "Conduit Power", "Darkness", "Fatal Poison", "Fire Resistance", "Haste", "Health Boost", "Hunger", "Instant Damage", "Instant Health", "Invisibility", "Jump Boost", "Levitation", "Mining Fatigue", "Nausea", "Night Vision", "Poison", "Regeneration", "Resistance", "Saturation", "Slowness", "Speed", "Strength", "Water Breathing", "Weakness", "Wither"]);
