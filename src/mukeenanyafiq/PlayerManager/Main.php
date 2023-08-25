@@ -73,21 +73,21 @@ class Main extends PluginBase implements Listener {
 
     public function onLoad(): void {
         $this->getLogger()->info("Plugin loaded");
-    }
-
-    public function onEnable(): void {
-        $this->getLogger()->info("Plugin has been enabled");
         if (in_array($this->getConfig()->get("firstplace"), $this::FIRST_PLACE_TYPE) === false) {
             $this->getLogger()->warning("Unknown firstplace type: '" .strtolower($this->getConfig()->get("firstplace")). "'. Check any misspells or typos you might have made. For now, the type will be set to 'model' for default");
             $this->firstplacetypechoosen = "model";
         } else {
             $this->firstplacetypechoosen = $this->getConfig()->get("firstplace");
         }
-        if (count($this->getConfig()->get("blacklist")) > 0) {
-            if (count($this->getConfig()->get("blacklist")) === 1) {
-                $this->getLogger()->info("There are " .count($this->getConfig()->get("blacklist")). " blacklisted player from using PlayerManager form: " .implode(", ", $this->getConfig()->get("blacklist")));
-            } else {
-                $this->getLogger()->info("There are " .count($this->getConfig()->get("blacklist")). " blacklisted players from using PlayerManager form: " .implode(", ", $this->getConfig()->get("blacklist")));
+        if (!is_array($this->getConfig()->get("blacklist"))) {
+            $this->getLogger()->warning(`"blacklist" option is not an array class. The class that "blacklist" option used was ` .get_class($this->getConfig()->get("blacklist")). `. If you don't know, an array class looks like this: "[]". Change the "blacklist" option class to array with the example putted on this message. For now, no player will be blacklisted from using PlayerManager form.`);
+        } else {
+            if (count($this->getConfig()->get("blacklist")) > 0) {
+                if (count($this->getConfig()->get("blacklist")) === 1) {
+                    $this->getLogger()->info("There are " .count($this->getConfig()->get("blacklist")). " blacklisted player from using PlayerManager form: " .implode(", ", $this->getConfig()->get("blacklist")));
+                } else {
+                    $this->getLogger()->info("There are " .count($this->getConfig()->get("blacklist")). " blacklisted players from using PlayerManager form: " .implode(", ", $this->getConfig()->get("blacklist")));
+                }
             }
         }
     }
@@ -115,26 +115,31 @@ class Main extends PluginBase implements Listener {
 
                     if ($args[0] === "reload") {
                         $this->getConfig()->reload();
-                        $commandSender->sendMessage(TF::colorize("&aConfiguration file (config.yml) has been reloaded."));
-                        $this->getLogger()->info("Configuration file (located in " .$this->getDataFolder(). "config.yml) has been reloaded by " .$commandSender->getName(). ".");
+                        $commandSender->sendMessage(TF::colorize("&aPlayerManager's Configuration file (config.yml) has been reloaded."));
+                        $this->getLogger()->info("PlayerManager's configuration file (located in " .$this->getDataFolder(). "config.yml) has been reloaded by " .$commandSender->getName(). ".");
                         if (in_array($this->getConfig()->get("firstplace"), $this::FIRST_PLACE_TYPE) === false) {
                             $commandSender->sendMessage(TF::colorize("&eUnknown firstplace type: '" .strtolower($this->getConfig()->get("firstplace")). "'. Check any misspells or typos you might have made. For now, the type will be set to 'model' for default"));
                             $this->firstplacetypechoosen = "model";
                         } else {
                             $this->firstplacetypechoosen = $this->getConfig()->get("firstplace");
                         } 
-                        if (count($this->getConfig()->get("blacklist")) > 0) {
-                            if (count($this->getConfig()->get("blacklist")) === 1) {
-                                $this->getLogger()->info("There are " .count($this->getConfig()->get("blacklist")). " blacklisted player from using PlayerManager form: " .implode(", ", $this->getConfig()->get("blacklist")));
-                            } else {
-                                $this->getLogger()->info("There are " .count($this->getConfig()->get("blacklist")). " blacklisted players from using PlayerManager form: " .implode(", ", $this->getConfig()->get("blacklist")));
+                        if (!is_array($this->getConfig()->get("blacklist"))) {
+                            $commandSender->sendMessage(`"blacklist" option is not an array class. The class that "blacklist" option used was ` .get_class($this->getConfig()->get("blacklist")). `. If you don't know, an array class looks like this: "[]". Change the "blacklist" option class to array with the example putted on this message. For now, no player will be blacklisted from using PlayerManager form.`);
+                        } else {
+                            if (count($this->getConfig()->get("blacklist")) > 0) {
+                                if (count($this->getConfig()->get("blacklist")) === 1) {
+                                    $this->getLogger()->info("There are " .count($this->getConfig()->get("blacklist")). " blacklisted player from using PlayerManager form: " .implode(", ", $this->getConfig()->get("blacklist")));
+                                } else {
+                                    $this->getLogger()->info("There are " .count($this->getConfig()->get("blacklist")). " blacklisted players from using PlayerManager form: " .implode(", ", $this->getConfig()->get("blacklist")));
+                                }
                             }
-                        }
-                        if (in_array($commandSender->getName(), $this->getConfig()->get("blacklist"))) {
-                            if ($commandSender->getName() === "CONSOLE") {
-                                $commandSender->sendMessage(TF::colorize("&cIt's useless to blacklist Console. Console can't open forms."));
-                            } else {
-                                $commandSender->sendMessage(TF::colorize("&cUnfortunately, you are in the list of blacklisted players from using PlayerManager form. This means &lyou can't use PlayerManager form anymore."));
+
+                            if (in_array($commandSender->getName(), $this->getConfig()->get("blacklist"))) {
+                                if ($commandSender->getName() === "CONSOLE") {
+                                    $commandSender->sendMessage(TF::colorize("&cIt's useless to blacklist Console. Console can't open forms."));
+                                } else {
+                                    $commandSender->sendMessage(TF::colorize("&cUnfortunately, you are in the list of blacklisted players from using PlayerManager form. This means &lyou can't use PlayerManager form anymore."));
+                                }
                             }
                         }
                         return true;
@@ -769,7 +774,7 @@ class Main extends PluginBase implements Listener {
                                 
                                 // Minecraft produces ticks, and a second on real life time equals to 20 ticks.
                                 // Multiplying the real effect seconds by 20 ticks, and the game will acts as the effect seconds was using the real effect seconds.
-                                // If you tried to print $calculated, it will return the real effect seconds that has been multiplied by 20.
+                                // If you tried to print $calculated, it will return the real effect seconds but multiplied by 20.
                                 $calculated = intval($data[1]) * 20;
 
                                 $playertarget->getEffects()->add(new EffectInstance($effectlist[$data[0]], intval($calculated), $data[2], $data[3]));
