@@ -15,9 +15,11 @@ use pocketmine\command\CommandSender;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\event\Listener;
+use pocketmine\lang\Translatable;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
+use pocketmine\Server;
 use pocketmine\utils\TextFormat as TF;
 
 class Main extends PluginBase implements Listener {
@@ -34,21 +36,6 @@ class Main extends PluginBase implements Listener {
         "health", 
         "position", 
         "gamemode"
-    ];
-
-    public const FIRST_PLACE_TYPE_EXTRA = [
-        "model" => 0, 
-        "os" => 1, 
-        "ip" => 2, 
-        "port" => 3, 
-        "ping" => 4, 
-        "ui" => 5, 
-        "gui" => 6, 
-        "controls" => 7, 
-        "uuid" => 8, 
-        "health" => 9, 
-        "position" => 10,
-        "gamemode" => 11
     ];
 
     public const PLAYER_MANAGE_CATEGORY = [
@@ -80,7 +67,7 @@ class Main extends PluginBase implements Listener {
             $this->firstplacetypechoosen = $this->getConfig()->get("firstplace");
         }
         if (!is_array($this->getConfig()->get("blacklist"))) {
-            $this->getLogger()->warning(`"blacklist" option is not an array class. The class that "blacklist" option used was ` .get_class($this->getConfig()->get("blacklist")). `. If you don't know, an array class looks like this: "[]". Change the "blacklist" option class to array with the example putted on this message. For now, no player will be blacklisted from using PlayerManager form.`);
+            $this->getLogger()->warning(`"blacklist" option is not an array class. If you don't know, an array class looks like this: "[]". Change the "blacklist" option class to array with the example putted on this message. For now, no player will be blacklisted from using PlayerManager form.`);
         } else {
             if (count($this->getConfig()->get("blacklist")) > 0) {
                 if (count($this->getConfig()->get("blacklist")) === 1) {
@@ -124,7 +111,7 @@ class Main extends PluginBase implements Listener {
                             $this->firstplacetypechoosen = $this->getConfig()->get("firstplace");
                         } 
                         if (!is_array($this->getConfig()->get("blacklist"))) {
-                            $commandSender->sendMessage(`"blacklist" option is not an array class. The class that "blacklist" option used was ` .get_class($this->getConfig()->get("blacklist")). `. If you don't know, an array class looks like this: "[]". Change the "blacklist" option class to array with the example putted on this message. For now, no player will be blacklisted from using PlayerManager form.`);
+                            $commandSender->sendMessage(TF::colorize("&e'blacklist' option is not an array class. If you don't know, an array class looks like this: '[]'. Change the 'blacklist' option class to array. For now, no player will be blacklisted from using PlayerManager form."));
                         } else {
                             if (count($this->getConfig()->get("blacklist")) > 0) {
                                 if (count($this->getConfig()->get("blacklist")) === 1) {
@@ -147,9 +134,11 @@ class Main extends PluginBase implements Listener {
                 }
 
                 if ($commandSender instanceof Player) {
-                    if (in_array($commandSender->getName(), $this->getConfig()->get("blacklist"))) {
-                        $commandSender->sendMessage(TF::colorize("&cSorry, you are not allowed to use this command. Even though you have the permission to use the command, you're on the list of the blacklisted players. If you have the access to the server's files, you can delete your username off from the list in the configuration file."));
-                        return true;
+                    if (is_array($this->getConfig()->get("blacklist"))) {
+                        if (in_array($commandSender->getName(), $this->getConfig()->get("blacklist"))) {
+                            $commandSender->sendMessage(TF::colorize("&cSorry, you are not allowed to use this command. Even though you have the permission to use the command, you're on the list of the blacklisted players. If you have the access to the server's files, you can delete your username off from the list in the configuration file."));
+                            return true;
+                        }
                     }
 
                     $this->openPlayerManagerForm($commandSender, $args);
@@ -235,6 +224,7 @@ class Main extends PluginBase implements Listener {
                         $form->setTitle($this::FORMTITLE);
                         $form->setContent("Select the player you want to manage");
                         foreach ($this->getServer()->getOnlinePlayers() as $value) {
+                            $language = Server::getInstance()->getLanguage();
                             $clientData = $value->getPlayerInfo()->getExtraData();
 
                             switch (strtolower($this->firstplacetypechoosen)) {
@@ -261,7 +251,7 @@ class Main extends PluginBase implements Listener {
                                 case "position":
                                     $form->addButton(TF::colorize($value->getName(). "\n&lX: " .$value->getPosition()->getFloorX(). " Y: " .$value->getPosition()->getFloorY(). " Z: " .$value->getPosition()->getFloorZ()));
                                 case "gamemode":
-                                    $form->addButton(TF::colorize($value->getName(). "\n&l" .$value->getGamemode()->getTranslatableName()->getText()));
+                                    $form->addButton(TF::colorize($value->getName(). "\n&l" .$language->translateString($value->getGamemode()->getTranslatableName()->getText())));
                             }
                         }
                         $player->sendForm($form);
@@ -777,7 +767,7 @@ class Main extends PluginBase implements Listener {
                                 // If you tried to print $calculated, it will return the real effect seconds but multiplied by 20.
                                 $calculated = intval($data[1]) * 20;
 
-                                $playertarget->getEffects()->add(new EffectInstance($effectlist[$data[0]], intval($calculated), $data[2], $data[3]));
+                                $playertarget->getEffects()->add(new EffectInstance($effectlist[$data[0]], intval($calculated), intval($data[2]), $data[3]));
                                 $player->sendMessage("Successfully added a new effect " .$effectlist[$data[0]]->getName()->getText(). " to " .$playertarget->getName(). " for " .intval($data[1]). " seconds with amplifier " .$data[2]. " and particle effect visible to everyone set to " .$data[3]. "!");
                             });
                             $form->setTitle("Add Effects");
@@ -795,7 +785,7 @@ class Main extends PluginBase implements Listener {
 
                                 switch ($data) {
                                     case $data:
-                                        $effectchoosen = $playertarget->getEffects()->get(array_values($playertarget->getEffects()->all())[$data]);
+                                        $effectchoosen = $playertarget->getEffects()->get(array_values($playertarget->getEffects()->all())[$data]->getType());
                                         $form = new SimpleForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
                                             if ($data === null) {
                                                 return true;
@@ -804,6 +794,8 @@ class Main extends PluginBase implements Listener {
                                             switch ($data) {
                                                 case 0:
                                                     $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
+                                                        $language = Server::getInstance()->getLanguage();
+
                                                         if ($data === null) {
                                                             return true;
                                                         }
@@ -813,8 +805,8 @@ class Main extends PluginBase implements Listener {
                                                         }
 
                                                         $data[1] = intval($data[1]) * 20;
-                                                        $effectchoosen->decreaseDuration($data[1]);
-                                                        $player->sendMessage("Successfully decreased duration for effect " .$effectchoosen->getType()->getName()->getText(). " for " .$data[1]. "seconds in the player " .$playertarget->getName(). "!");
+                                                        $effectchoosen->decreaseDuration(intval($data[1]));
+                                                        $player->sendMessage("Successfully decreased duration for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " for " .$data[1]. "seconds in the player " .$playertarget->getName(). "!");
                                                     });
                                                     $form->setTitle("Decrease Duration");
                                                     $form->addLabel("Decrease duration will decreasing the duration of the effect so that it expires so quickly");
@@ -823,12 +815,14 @@ class Main extends PluginBase implements Listener {
                                                     return $form;
                                                 case 1:
                                                     $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
+                                                        $language = Server::getInstance()->getLanguage();
+
                                                         if ($data === null) {
                                                             return true;
                                                         }
 
                                                         $effectchoosen->setAmbient($data[1]);
-                                                        $player->sendMessage("Successfully changed ambient to effect " .$effectchoosen->getType()->getName()->getText(). " as " .$data[1]. " in the player " .$playertarget->getName(). "!");
+                                                        $player->sendMessage("Successfully changed ambient to effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " as " .$data[1]. " in the player " .$playertarget->getName(). "!");
                                                     });
                                                     $form->setTitle("Set Ambient");
                                                     $form->addLabel("Enabling ambient to an effect will make the effect indicates are from game environment, not from plugin");
@@ -837,12 +831,14 @@ class Main extends PluginBase implements Listener {
                                                     return $form;
                                                 case 2:
                                                     $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
+                                                        $language = Server::getInstance()->getLanguage();
+
                                                         if ($data === null) {
                                                             return true;
                                                         }
 
-                                                        $effectchoosen->setAmplifier($data[1]);
-                                                        $player->sendMessage("Successfully changed amplifier for effect " .$effectchoosen->getType()->getName()->getText(). " to " .$data[1]. " in the player " .$playertarget->getName(). "!");
+                                                        $effectchoosen->setAmplifier(intval($data[1]));
+                                                        $player->sendMessage("Successfully changed amplifier for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " to " .$data[1]. " in the player " .$playertarget->getName(). "!");
                                                     });
                                                     $form->setTitle("Set Amplifier");
                                                     $form->addLabel("Changes the strength/amplifier of the effect");
@@ -851,12 +847,14 @@ class Main extends PluginBase implements Listener {
                                                     return $form;
                                                 case 3:
                                                     $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
+                                                        $language = Server::getInstance()->getLanguage();
+
                                                         if ($data === null) {
                                                             return true;
                                                         }
 
-                                                        $effectchoosen->setColor(new Color($data[1], $data[2], $data[3], $data[4]));
-                                                        $player->sendMessage("Successfully changed color for effect " .$effectchoosen->getType()->getName()->getText(). "to R:" .$data[1]. " G: " .$data[2]. " B: " .$data[3]. " A: " .$data[4]. " in the player " .$playertarget->getName(). "!");
+                                                        $effectchoosen->setColor(new Color(intval($data[1]), intval($data[2]), intval($data[3]), intval($data[4])));
+                                                        $player->sendMessage("Successfully changed color for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " to R: " .$data[1]. " G: " .$data[2]. " B: " .$data[3]. " A: " .$data[4]. " in the player " .$playertarget->getName(). "!");
                                                     });
                                                     $form->setTitle("Set Color");
                                                     $form->addLabel("Changes the color of the effect");
@@ -868,6 +866,8 @@ class Main extends PluginBase implements Listener {
                                                     return $form;
                                                 case 4:
                                                     $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
+                                                        $language = Server::getInstance()->getLanguage();
+
                                                         if ($data === null) {
                                                             return true;
                                                         }
@@ -877,8 +877,8 @@ class Main extends PluginBase implements Listener {
                                                         }
 
                                                         $data[1] = intval($data[1]) * 20;
-                                                        $effectchoosen->setDuration($data[1]);
-                                                        $player->sendMessage("Successfully decreased duration for effect " .$effectchoosen->getType()->getName()->getText(). " for " .$data[1]. "seconds in the player " .$playertarget->getName(). "!");
+                                                        $effectchoosen->setDuration(intval($data[1]));
+                                                        $player->sendMessage("Successfully decreased duration for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " for " .$data[1]. "seconds in the player " .$playertarget->getName(). "!");
                                                     });
                                                     $form->setTitle("Set Duration");
                                                     $form->addLabel("Change remaining duration of the effect");
@@ -887,12 +887,14 @@ class Main extends PluginBase implements Listener {
                                                     return $form;
                                                 case 5:
                                                     $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
+                                                        $language = Server::getInstance()->getLanguage();
+
                                                         if ($data === null) {
                                                             return true;
                                                         }
 
                                                         $effectchoosen->setVisible($data[1]);
-                                                        $player->sendMessage("Successfully changed visible to particle effect " .$effectchoosen->getType()->getName()->getText(). " as " .$data[1]. " in the player " .$playertarget->getName(). "!");
+                                                        $player->sendMessage("Successfully changed visible to particle effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " as " .$data[1]. " in the player " .$playertarget->getName(). "!");
                                                     });
                                                     $form->setTitle("Set Visible");
                                                     $form->addLabel("Sets whether the effect particle is visible to everyone or nobody including you");
@@ -925,7 +927,7 @@ class Main extends PluginBase implements Listener {
                                             }
                                         });
                                         $form->setTitle($effectchoosen->getType()->getName()->getText());
-                                        $form->setContent(TF::colorize("Information about this applied effect in player " .$playertarget->getName(). ":\n \n&aAmplifier: &f" .$effectchoosen->getAmplifier(). "\n&aColor: &fR: " .$effectchoosen->getColor()->getR(). " G: " .$effectchoosen->getColor()->getG(). " B: " .$effectchoosen->getColor()->getB(). " A: " .$effectchoosen->getColor()->getA(). "\nDuration remaining: " .$effectchoosen->getDuration(). "\nEffect Level: " .$effectchoosen->getEffectLevel(). "\nHas expired: " .$effectchoosen->hasExpired(), "\nIs ambient: " .$effectchoosen->isAmbient(). "\nParticle visible to everyone: " .$effectchoosen->isVisible(). "\n \nWhat do you want to do with this effect?"));
+                                        $form->setContent(TF::colorize("Information about this applied effect in player " .$playertarget->getName(). ":\n \n&aAmplifier: &f" .$effectchoosen->getAmplifier(). "\n&aColor: &fR: " .$effectchoosen->getColor()->getR(). " G: " .$effectchoosen->getColor()->getG(). " B: " .$effectchoosen->getColor()->getB(). " A: " .$effectchoosen->getColor()->getA(). "\n&aDuration remaining: &f" .floor($effectchoosen->getDuration() / 20). "\n&aEffect Level: &f" .$effectchoosen->getEffectLevel(). "\n&aHas expired: &f" .strval($effectchoosen->hasExpired()). "\n&aIs ambient: &f" .strval($effectchoosen->isAmbient()). "\n&aParticle visible to everyone: &f" .strval($effectchoosen->isVisible()). "\n \nWhat do you want to do with this effect?"));
                                         $form->addButton(TF::colorize("Decrease Duration\n&lDecreases duration"));
                                         $form->addButton(TF::colorize("Set Ambient\n&lSet effect from ambient"));
                                         $form->addButton(TF::colorize("Set Amplifier\n&lSet effect's strength"));
@@ -940,7 +942,8 @@ class Main extends PluginBase implements Listener {
                             $form->setTitle("Manage Effects");
                             $form->setContent("Select an effect to be managed");
                             foreach ($playertarget->getEffects()->all() as $value) {
-                                $form->addButton($value->getType()->getName()->getText(). "\n" .$value->getDuration(). " secs left");
+                                $language = Server::getInstance()->getLanguage();
+                                $form->addButton($language->translateString($value->getType()->getName()->getText()). "\n" .floor($value->getDuration() / 20). " secs left");
                             }
                             $player->sendForm($form);
                             return $form;
