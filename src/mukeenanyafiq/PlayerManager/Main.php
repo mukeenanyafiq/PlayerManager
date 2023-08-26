@@ -847,7 +847,7 @@ class Main extends PluginBase implements Listener {
 
                                                         $type = $effectchoosen->getType();
                                                         $duration = $effectchoosen->getDuration();
-                                                        $amplifier = $data[1];
+                                                        $amplifier = intval($data[1]);
                                                         $visible = $effectchoosen->isVisible();
                                                         $ambient = $effectchoosen->isAmbient();
                                                         $color = $effectchoosen->getColor();
@@ -904,7 +904,7 @@ class Main extends PluginBase implements Listener {
                                                         $tickToDuration = intval($data[1]) * 20;
 
                                                         $type = $effectchoosen->getType();
-                                                        $duration = $tickToDuration;
+                                                        $duration = intval($tickToDuration);
                                                         $amplifier = $effectchoosen->getAmplifier();
                                                         $visible = $effectchoosen->isVisible();
                                                         $ambient = $effectchoosen->isAmbient();
