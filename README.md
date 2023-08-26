@@ -31,9 +31,9 @@ Such as:
 - `/plmanager effects <player>` - Opening player's effects
 - `/plmanager reload` - Reloads PlayerManager's configuration file
 
-Normal usages:
+Usages:
 - `/plmanager [info|session|ability|attributes|effects] <player>`
-- `/plmanager [reload]`
+- `/plmanager reload`
 
 You can change the `<player>` argument to any online player name as it is required for the commands to work\
 (You can use `@s` as the player argument to indicate you)\
