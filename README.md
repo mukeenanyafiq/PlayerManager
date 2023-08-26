@@ -23,9 +23,6 @@ The player's informations includes:
 To use this plugin, you can use command `/plmanager`, and it will open the PlayerManager form!\
 There are also command arguments that you can use to get into the action quickly!
 
-Usages:
-- `/plmanager [functions] <player (if neccessary)>`
-
 Such as:
 - `/plmanager info <player>` - Opening player's informations
 - `/plmanager session <player>` - Opening player's session
@@ -33,6 +30,10 @@ Such as:
 - `/plmanager attributes <player>` - Opening player's attributes
 - `/plmanager effects <player>` - Opening player's effects
 - `/plmanager reload` - Reloads PlayerManager's configuration file
+
+Normal usages:
+- `/plmanager [info|session|ability|attributes|effects] <player>`
+- `/plmanager [reload]`
 
 You can change the `<player>` argument to any online player name as it is required for the commands to work\
 (You can use `@s` as the player argument to indicate you)\
