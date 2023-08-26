@@ -821,7 +821,15 @@ class Main extends PluginBase implements Listener {
                                                             return true;
                                                         }
 
-                                                        $effectchoosen->setAmbient($data[1]);
+                                                        $type = $effectchoosen->getType();
+                                                        $duration = $effectchoosen->getDuration();
+                                                        $amplifier = $effectchoosen->getAmplifier();
+                                                        $visible = $effectchoosen->isVisible();
+                                                        $ambient = $data[1];
+                                                        $color = $effectchoosen->getColor();
+
+                                                        $playertarget->getEffects()->remove($type);
+                                                        $playertarget->getEffects()->add(new EffectInstance($type, $duration, $amplifier, $visible, $ambient, $color));
                                                         $player->sendMessage("Successfully changed ambient to effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " as " .$data[1]. " in the player " .$playertarget->getName(). "!");
                                                     });
                                                     $form->setTitle("Set Ambient");
@@ -837,6 +845,15 @@ class Main extends PluginBase implements Listener {
                                                             return true;
                                                         }
 
+                                                        $type = $effectchoosen->getType();
+                                                        $duration = $effectchoosen->getDuration();
+                                                        $amplifier = $data[1];
+                                                        $visible = $effectchoosen->isVisible();
+                                                        $ambient = $effectchoosen->isAmbient();
+                                                        $color = $effectchoosen->getColor();
+
+                                                        $playertarget->getEffects()->remove($type);
+                                                        $playertarget->getEffects()->add(new EffectInstance($type, $duration, $amplifier, $visible, $ambient, $color));
                                                         $effectchoosen->setAmplifier(intval($data[1]));
                                                         $player->sendMessage("Successfully changed amplifier for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " to " .$data[1]. " in the player " .$playertarget->getName(). "!");
                                                     });
@@ -853,7 +870,15 @@ class Main extends PluginBase implements Listener {
                                                             return true;
                                                         }
 
-                                                        $effectchoosen->setColor(new Color(intval($data[1]), intval($data[2]), intval($data[3]), intval($data[4])));
+                                                        $type = $effectchoosen->getType();
+                                                        $duration = $effectchoosen->getDuration();
+                                                        $amplifier = $effectchoosen->getAmplifier();
+                                                        $visible = $effectchoosen->isVisible();
+                                                        $ambient = $effectchoosen->isAmbient();
+                                                        $color = new Color(intval($data[1]), intval($data[2]), intval($data[3]), intval($data[4]));
+
+                                                        $playertarget->getEffects()->remove($type);
+                                                        $playertarget->getEffects()->add(new EffectInstance($type, $duration, $amplifier, $visible, $ambient, $color));
                                                         $player->sendMessage("Successfully changed color for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " to R: " .$data[1]. " G: " .$data[2]. " B: " .$data[3]. " A: " .$data[4]. " in the player " .$playertarget->getName(). "!");
                                                     });
                                                     $form->setTitle("Set Color");
@@ -876,8 +901,17 @@ class Main extends PluginBase implements Listener {
                                                             $data[1] = 0;
                                                         }
 
-                                                        $data[1] = intval($data[1]) * 20;
-                                                        $effectchoosen->setDuration(intval($data[1]));
+                                                        $tickToDuration = intval($data[1]) * 20;
+
+                                                        $type = $effectchoosen->getType();
+                                                        $duration = $tickToDuration;
+                                                        $amplifier = $effectchoosen->getAmplifier();
+                                                        $visible = $effectchoosen->isVisible();
+                                                        $ambient = $effectchoosen->isAmbient();
+                                                        $color = $effectchoosen->getColor();
+
+                                                        $playertarget->getEffects()->remove($type);
+                                                        $playertarget->getEffects()->add(new EffectInstance($type, $duration, $amplifier, $visible, $ambient, $color));
                                                         $player->sendMessage("Successfully decreased duration for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " for " .$data[1]. "seconds in the player " .$playertarget->getName(). "!");
                                                     });
                                                     $form->setTitle("Set Duration");
@@ -893,7 +927,15 @@ class Main extends PluginBase implements Listener {
                                                             return true;
                                                         }
 
-                                                        $effectchoosen->setVisible($data[1]);
+                                                        $type = $effectchoosen->getType();
+                                                        $duration = $effectchoosen->getDuration();
+                                                        $amplifier = $effectchoosen->getAmplifier();
+                                                        $visible = $data[1];
+                                                        $ambient = $effectchoosen->isAmbient();
+                                                        $color = $effectchoosen->getColor();
+
+                                                        $playertarget->getEffects()->remove($type);
+                                                        $playertarget->getEffects()->add(new EffectInstance($type, $duration, $amplifier, $visible, $ambient, $color));
                                                         $player->sendMessage("Successfully changed visible to particle effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " as " .$data[1]. " in the player " .$playertarget->getName(). "!");
                                                     });
                                                     $form->setTitle("Set Visible");
@@ -902,7 +944,7 @@ class Main extends PluginBase implements Listener {
                                                     $player->sendForm($form);
                                                     return $form;
                                                 case 6:
-                                                    $form = new ModalForm(function (Player $player, $data = null) use ($effectchoosen) {
+                                                    $form = new ModalForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
                                                         if ($data === null) {
                                                             return true;
                                                         }
@@ -913,13 +955,20 @@ class Main extends PluginBase implements Listener {
                                                             break;
 
                                                             case 1:
-                                                                $effectchoosen->resetColor();
+                                                                $type = $effectchoosen->getType();
+                                                                $duration = $effectchoosen->getDuration();
+                                                                $amplifier = $effectchoosen->getAmplifier();
+                                                                $visible = $effectchoosen->isVisible();
+                                                                $ambient = $effectchoosen->isAmbient();
+        
+                                                                $playertarget->getEffects()->remove($type);
+                                                                $playertarget->getEffects()->add(new EffectInstance($type, $duration, $amplifier, $visible, $ambient));
                                                                 $player->sendMessage(TF::colorize("&aSuccessfully resetted the color of the particle effect!"));
                                                             break;
                                                         }
                                                     });
                                                     $form->setTitle("Reset Color");
-                                                    $form->setContent("Are you sure you want to reset the effect particle color? The current color of the particle effect (R: " .$effectchoosen->getColor()->getR(). " G: " .$effectchoosen->getColor()->getG(). " B: " .$effectchoosen->getColor()->getB(). " A: " .$effectchoosen->getColor()->getA(). ") will change as soon as you resetted the color. Continue?");
+                                                    $form->setContent("Are you sure you want to reset the effect particle color? The current color of the particle effect (R: " .$effectchoosen->getColor()->getR(). " G: " .$effectchoosen->getColor()->getG(). " B: " .$effectchoosen->getColor()->getB(). " A: " .$effectchoosen->getColor()->getA(). ") will change to default as soon as you resetted the color. Continue?");
                                                     $form->setButton1("Yes");
                                                     $form->setButton2("No");
                                                     $player->sendForm($form);
