@@ -902,7 +902,7 @@ class Main extends PluginBase implements Listener {
                                                     $player->sendForm($form);
                                                     return $form;
                                                 case 6:
-                                                    $form = new ModalForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
+                                                    $form = new ModalForm(function (Player $player, $data = null) use ($effectchoosen) {
                                                         if ($data === null) {
                                                             return true;
                                                         }
