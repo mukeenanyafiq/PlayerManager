@@ -59,7 +59,6 @@ class Main extends PluginBase implements Listener {
     private const FORMTITLE = "PlayerManager";
 
     public function onLoad(): void {
-        $this->getLogger()->info("Plugin loaded");
         if (in_array($this->getConfig()->get("firstplace"), $this::FIRST_PLACE_TYPE) === false) {
             $this->getLogger()->warning("Unknown firstplace type: '" .strtolower($this->getConfig()->get("firstplace")). "'. Check any misspells or typos you might have made. For now, the type will be set to 'model' for default");
             $this->firstplacetypechoosen = "model";
