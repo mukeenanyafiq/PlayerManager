@@ -9,13 +9,13 @@ use mukeenanyafiq\FormAPI\SimpleForm;
 use mukeenanyafiq\FormAPI\CustomForm;
 use mukeenanyafiq\FormAPI\ModalForm;
 
+/* Pocketmine classes */
 use pocketmine\color\Color;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\event\Listener;
-use pocketmine\lang\Translatable;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
@@ -251,7 +251,7 @@ class Main extends PluginBase implements Listener {
                                 case "position":
                                     $form->addButton(TF::colorize($value->getName(). "\n&lX: " .$value->getPosition()->getFloorX(). " Y: " .$value->getPosition()->getFloorY(). " Z: " .$value->getPosition()->getFloorZ()));
                                 case "gamemode":
-                                    $form->addButton(TF::colorize($value->getName(). "\n&l" .$language->translateString($value->getGamemode()->getTranslatableName()->getText())));
+                                    $form->addButton(TF::colorize($value->getName(). "\n&l" .$value->getGamemode()->name()));
                             }
                         }
                         $player->sendForm($form);
@@ -621,7 +621,7 @@ class Main extends PluginBase implements Listener {
                     switch ($data) {
                         case 0:
                             $player->sendMessage("==== " .$playertarget->getName(). "'s attributes - " .$this::FORMTITLE. " ====");
-                            $player->sendMessage(TF::colorize("&aAbsorption: &f" .$playertarget->getAbsorption(). "\n&aAir Supply Ticks: &f" .$playertarget->getAirSupplyTicks(). "\n&aHas Auto Jump: &f" .$playertarget->hasAutoJump(). "\n&aIs Breathing: &f" .$playertarget->isBreathing(). "\n&aCan Climb: &f" .$playertarget->canClimb(). "\n&aCan Climb Walls: &f" .$playertarget->canClimbWalls(). "\n&aDisplay Name: &f" .$playertarget->getDisplayName(). "\n&aFire Ticks: &f" .$playertarget->getFireTicks(). "\n&aGamemode: &f" .$playertarget->getGamemode()->name(). "\n&aIs Gliding: &f" .$playertarget->isGliding(). "\n&aGravity: &f" .$playertarget->getGravity(). "\n&aHas Gravity: &f" .$playertarget->hasGravity(). "\n&aHealth: &f" .$playertarget->getHealth(). " HP\n&aIs Invisible: &f" .$playertarget->isInvisible(). "\n&aMaximum Air Supply Ticks: &f" .$playertarget->getMaxAirSupplyTicks(). "\n&aMaximum Health: &f" .$playertarget->getMaxHealth(). "\n&aMovement Speed: &f" .$playertarget->getMovementSpeed(). "\n&aName Tag: &f" .$playertarget->getNameTag(). "\n&aIs Name Tag Always Visible: &f" .$playertarget->isNameTagAlwaysVisible(). "\n&aIs Name Tag Visible: &f" .$playertarget->isNameTagVisible(). "\n&aOn Fire For: &f" .$playertarget->isOnFire(). " seconds\n&aScale: &f" .$playertarget->getScale(). "\n&aIs Silent: &f" .$playertarget->isSilent(). "\n&aIs Sneaking: &f" .$playertarget->isSneaking(). "\n&aIs Sprinting: &f" .$playertarget->isSprinting(). "\n&aIs Swimming: &f" .$playertarget->isSwimming()));
+                            $player->sendMessage(TF::colorize("&aAbsorption: &f" .$playertarget->getAbsorption(). "\n&aAir Supply Ticks: &f" .$playertarget->getAirSupplyTicks(). "\n&aHas Auto Jump: &f" .var_export($playertarget->hasAutoJump(), true). "\n&aIs Breathing: &f" .var_export($playertarget->isBreathing(), true). "\n&aCan Climb: &f" .var_export($playertarget->canClimb(), true). "\n&aCan Climb Walls: &f" .var_export($playertarget->canClimbWalls(), true). "\n&aDisplay Name: &f" .$playertarget->getDisplayName(). "\n&aFire Ticks: &f" .$playertarget->getFireTicks(). "\n&aGamemode: &f" .$playertarget->getGamemode()->name(). "\n&aIs Gliding: &f" .var_export($playertarget->isGliding(), true). "\n&aGravity: &f" .$playertarget->getGravity(). "\n&aHas Gravity: &f" .var_export($playertarget->hasGravity(), true). "\n&aHealth: &f" .$playertarget->getHealth(). " HP\n&aIs Invisible: &f" .var_export($playertarget->isInvisible(), true). "\n&aMaximum Air Supply Ticks: &f" .$playertarget->getMaxAirSupplyTicks(). "\n&aMaximum Health: &f" .$playertarget->getMaxHealth(). "\n&aMovement Speed: &f" .$playertarget->getMovementSpeed(). "\n&aName Tag: &f" .$playertarget->getNameTag(). "\n&aIs Name Tag Always Visible: &f" .var_export($playertarget->isNameTagAlwaysVisible(), true). "\n&aIs Name Tag Visible: &f" .var_export($playertarget->isNameTagVisible(), true). "\n&aIs On Fire: &f" .var_export($playertarget->isOnFire(), true). "\n&aScale: &f" .$playertarget->getScale(). "\n&aIs Silent: &f" .var_export($playertarget->isSilent(), true). "\n&aIs Sneaking: &f" .var_export($playertarget->isSneaking(), true). "\n&aIs Sprinting: &f" .var_export($playertarget->isSprinting(), true). "\n&aIs Swimming: &f" .var_export($playertarget->isSwimming(), true)));
                             $player->sendMessage("===========================");
                         break;
 
@@ -642,41 +642,46 @@ class Main extends PluginBase implements Listener {
                                         break;
         
                                         case 1:
+                                            // If the player's max health value is less than 1, sets the player's max health value to the player's original max health value
+                                            if (intval($data[15]) < 1) {
+                                                $data[15] = $playertarget->getMaxHealth();
+                                            }
+
                                             $playertarget->setAbsorption(floatval($data[0]));
                                             $playertarget->setAirSupplyTicks(intval($data[1]));
-                                            $playertarget->setAutoJump($data[2]);
-                                            $playertarget->setBreathing($data[3]);
-                                            $playertarget->setCanClimb($data[4]);
-                                            $playertarget->setCanClimbWalls($data[5]);
-                                            $playertarget->setDisplayName($data[6]);
-                                            $playertarget->setFireTicks($data[7]);
+                                            $playertarget->setAutoJump(boolval($data[2]));
+                                            $playertarget->setBreathing(boolval($data[3]));
+                                            $playertarget->setCanClimb(boolval($data[4]));
+                                            $playertarget->setCanClimbWalls(boolval($data[5]));
+                                            $playertarget->setDisplayName(strval($data[6]));
+                                            $playertarget->setFireTicks(intval($data[7]));
                                             $playertarget->setGamemode(GameMode::fromString($gamemodes[$data[8]]));
-                                            $playertarget->setGliding($data[9]);
+                                            $playertarget->setGliding(boolval($data[9]));
                                             $playertarget->setGravity(floatval($data[10]));
-                                            $playertarget->setHasGravity($data[11]);
+                                            $playertarget->setHasGravity(boolval($data[11]));
                                             $playertarget->setHealth(floatval($data[12]));
-                                            $playertarget->setInvisible($data[13]);
-                                            $playertarget->setMaxAirSupplyTicks($data[14]);
-                                            $playertarget->setMaxHealth($data[15]);
+                                            $playertarget->setInvisible(boolval($data[13]));
+                                            $playertarget->setMaxAirSupplyTicks(intval($data[14]));
+                                            $playertarget->setMaxHealth(intval($data[15]));
                                             $playertarget->setMovementSpeed(floatval($data[16]));
-                                            $playertarget->setNameTag($data[17]);
-                                            $playertarget->setNameTagAlwaysVisible($data[18]);
-                                            $playertarget->setNameTagVisible($data[19]);
-                                            $playertarget->setOnFire($data[20]);
+                                            $playertarget->setNameTag(strval($data[17]));
+                                            $playertarget->setNameTagAlwaysVisible(boolval($data[18]));
+                                            $playertarget->setNameTagVisible(boolval($data[19]));
+                                            $playertarget->setOnFire(intval($data[20]));
                                             $playertarget->setScale(floatval($data[21]));
-                                            $playertarget->setSilent($data[22]);
-                                            $playertarget->setSneaking($data[23]);
-                                            $playertarget->setSprinting($data[24]);
-                                            $playertarget->setSwimming($data[25]);
-                                            $player->sendMessage(TF::colorize("&a" .$playertarget->getName(). "'s attributes successfully changed!"));
+                                            $playertarget->setSilent(boolval($data[22]));
+                                            $playertarget->setSneaking(boolval($data[23]));
+                                            $playertarget->setSprinting(boolval($data[24]));
+                                            $playertarget->setSwimming(boolval($data[25]));
+                                            $player->sendMessage(TF::colorize("&a" .$playertarget->getName(). "'s attributes successfully changed! Some attributes may lasts until the player died or disconnected"));
                                         break;
                                     }
                                 });
                                 $form->setTitle($this::FORMTITLE. " - Confirmation");
                                 if ($playertarget->getName() === $player->getName()) {
-                                    $form->setContent("Are you sure you want to keep changing your attribute? This change could be a mess and there is no way to revert it back unless you remembered/saved the attributes!");
+                                    $form->setContent("Are you sure you want to keep changing your attribute? This change could be a mess and there is no way to revert it back unless you remembered/saved the attributes OR you died/disconnected!");
                                 } else {
-                                    $form->setContent("Are you sure you want to keep changing " .$playertarget->getName(). "'s attribute? This change could be a mess and there is no way to revert it back unless you remembered/saved the attributes!");
+                                    $form->setContent("Are you sure you want to keep changing " .$playertarget->getName(). "'s attribute? This change could be a mess and there is no way to revert it back unless you remembered/saved the attributes OR the player died/disconnected!");
                                 }
                                 $form->setButton1("Yes");
                                 $form->setButton2("No");
@@ -690,16 +695,16 @@ class Main extends PluginBase implements Listener {
                             $form->addToggle("Set player can climb", $playertarget->canClimb());
                             $form->addToggle("Set player can climb walls", $playertarget->canClimbWalls());
                             $form->addInput("Set player's display name", "Enter player's new display name", $playertarget->getDisplayName());
-                            $form->addSlider("Set player's fire tick", 0, $max, 1, $playertarget->getFireTicks());
-                            $form->addDropdown("Set player's gamemode", ["Adventure", "Survival", "Creative", "Spectator"], $gamemodes2[strtolower($playertarget->getGamemode()->name())]);
+                            $form->addInput("Set player on fire for an inputted seconds", "Number", strval($playertarget->getFireTicks()));
+                            $form->addDropdown("Set player's gamemode", ["Adventure Mode", "Survival Mode", "Creative Mode", "Spectator Mode"], $gamemodes2[strtolower($playertarget->getGamemode()->name())]);
                             $form->addToggle("Set player is glidng", $playertarget->isGliding());
-                            $form->addSlider("Set player's gravity", 0, $max, 1, intval($playertarget->getGravity()));
+                            $form->addInput("Set player's gravity", "Number", strval($playertarget->getGravity()));
                             $form->addToggle("Set player has gravity", $playertarget->hasGravity());
-                            $form->addSlider("Set player's health", 0, $playertarget->getMaxHealth(), 1, intval($playertarget->getHealth()));
+                            $form->addInput("Set player's health", "Number", strval($playertarget->getHealth()));
                             $form->addToggle("Set player is invisible", $playertarget->isInvisible());
-                            $form->addSlider("Set player's max air supply ticks", 1, $max, 1, $playertarget->getMaxAirSupplyTicks());
-                            $form->addSlider("Set player's max health", 0, $max, 1, $playertarget->getMaxHealth());
-                            $form->addSlider("Set player's movement speed", 0, $max, 1, intval($playertarget->getMovementSpeed()));
+                            $form->addInput("Set player's max air supply ticks", "Number", strval($playertarget->getMaxAirSupplyTicks()));
+                            $form->addInput("Set player's max health", "Number", strval($playertarget->getMaxHealth()));
+                            $form->addInput("Set player's movement speed", "Number", strval($playertarget->getMovementSpeed()));
                             $form->addInput("Set player's name tag (the name ontop of the player)", "Enter player's new name tag", $playertarget->getNameTag());
                             $form->addToggle("Set player's nametag always visible", $playertarget->isNameTagAlwaysVisible());
                             $form->addToggle("Set player's nametag visible", $playertarget->isNameTagVisible());
@@ -758,17 +763,28 @@ class Main extends PluginBase implements Listener {
                     switch ($data) {
                         case 0:
                             $form = new CustomForm(function (Player $player, $data = null) use ($playertarget, $effectlist) {
+                                $language = Server::getInstance()->getLanguage();
+
                                 if ($data === null) {
                                     return true;
                                 }
                                 
-                                // Minecraft produces ticks, and a second on real life time equals to 20 ticks.
+                                // The input data will be turned into integer. Integer only accepts numbers. No decimals and no other character than numbers.
+                                // If you tried to put other characters than numbers in it or putting no number in the input, intval() will return number "0" as failure
+
+                                // 0 seconds is an instant expired effect. An effect with 0 seconds is like giving the player nothing
+                                // If the seconds inputted is under 1 second, then it will return as 30 seconds cause that's the default effect duration if you use /effect command if no duration specified
+                                if (intval($data[1]) < 1) {
+                                    $data[1] = 30;
+                                }
+
+                                // Minecraft produces ticks, and a second on real life time equals to 20 in-game ticks.
                                 // Multiplying the real effect seconds by 20 ticks, and the game will acts as the effect seconds was using the real effect seconds.
                                 // If you tried to print $calculated, it will return the real effect seconds but multiplied by 20.
                                 $calculated = intval($data[1]) * 20;
 
                                 $playertarget->getEffects()->add(new EffectInstance($effectlist[$data[0]], intval($calculated), intval($data[2]), $data[3]));
-                                $player->sendMessage("Successfully added a new effect " .$effectlist[$data[0]]->getName()->getText(). " to " .$playertarget->getName(). " for " .intval($data[1]). " seconds with amplifier " .$data[2]. " and particle effect visible to everyone set to " .$data[3]. "!");
+                                $player->sendMessage("Successfully added a new effect " .$language->translateString($effectlist[$data[0]]->getName()->getText()). " to " .$playertarget->getName(). " for " .intval($data[1]). " seconds with amplifier " .$data[2]. "!");
                             });
                             $form->setTitle("Add Effects");
                             $form->addDropdown("Select an effect to be added to " .$playertarget->getName(), ["Absorption", "Blindness", "Conduit Power", "Darkness", "Fatal Poison", "Fire Resistance", "Haste", "Health Boost", "Hunger", "Instant Damage", "Instant Health", "Invisibility", "Jump Boost", "Levitation", "Mining Fatigue", "Nausea", "Night Vision", "Poison", "Regeneration", "Resistance", "Saturation", "Slowness", "Speed", "Strength", "Water Breathing", "Weakness", "Wither"]);
@@ -804,9 +820,10 @@ class Main extends PluginBase implements Listener {
                                                             $data[1] = 0;
                                                         }
 
-                                                        $data[1] = intval($data[1]) * 20;
-                                                        $effectchoosen->decreaseDuration(intval($data[1]));
-                                                        $player->sendMessage("Successfully decreased duration for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " for " .$data[1]. "seconds in the player " .$playertarget->getName(). "!");
+                                                        $tickToDuration = intval($data[1]) * 20;
+
+                                                        $effectchoosen->decreaseDuration(intval($tickToDuration));
+                                                        $player->sendMessage(TF::colorize("&aDuration for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " successfully decreased to " .$data[1]. "seconds in the player " .$playertarget->getName(). "!"));
                                                     });
                                                     $form->setTitle("Decrease Duration");
                                                     $form->addLabel("Decrease duration will decreasing the duration of the effect so that it expires so quickly");
@@ -830,7 +847,7 @@ class Main extends PluginBase implements Listener {
 
                                                         $playertarget->getEffects()->remove($type);
                                                         $playertarget->getEffects()->add(new EffectInstance($type, $duration, $amplifier, $visible, $ambient, $color));
-                                                        $player->sendMessage("Successfully changed ambient to effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " as " .$data[1]. " in the player " .$playertarget->getName(). "!");
+                                                        $player->sendMessage(TF::colorize("&aEffect is ambient for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " successfully changed to " .var_export($data[1], true). " in the player " .$playertarget->getName(). "!"));
                                                     });
                                                     $form->setTitle("Set Ambient");
                                                     $form->addLabel("Enabling ambient to an effect will make the effect indicates are from game environment, not from plugin");
@@ -855,7 +872,7 @@ class Main extends PluginBase implements Listener {
                                                         $playertarget->getEffects()->remove($type);
                                                         $playertarget->getEffects()->add(new EffectInstance($type, $duration, $amplifier, $visible, $ambient, $color));
                                                         $effectchoosen->setAmplifier(intval($data[1]));
-                                                        $player->sendMessage("Successfully changed amplifier for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " to " .$data[1]. " in the player " .$playertarget->getName(). "!");
+                                                        $player->sendMessage(TF::colorize("&aAmplifier for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " successfully changed to " .$data[1]. " in the player " .$playertarget->getName(). "!"));
                                                     });
                                                     $form->setTitle("Set Amplifier");
                                                     $form->addLabel("Changes the strength/amplifier of the effect");
@@ -879,7 +896,7 @@ class Main extends PluginBase implements Listener {
 
                                                         $playertarget->getEffects()->remove($type);
                                                         $playertarget->getEffects()->add(new EffectInstance($type, $duration, $amplifier, $visible, $ambient, $color));
-                                                        $player->sendMessage("Successfully changed color for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " to R: " .$data[1]. " G: " .$data[2]. " B: " .$data[3]. " A: " .$data[4]. " in the player " .$playertarget->getName(). "!");
+                                                        $player->sendMessage(TF::colorize("&aColor for particle effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " successfully changed to R: " .$data[1]. " G: " .$data[2]. " B: " .$data[3]. " A: " .$data[4]. " in the player " .$playertarget->getName(). "!"));
                                                     });
                                                     $form->setTitle("Set Color");
                                                     $form->addLabel("Changes the color of the effect");
@@ -912,10 +929,14 @@ class Main extends PluginBase implements Listener {
 
                                                         $playertarget->getEffects()->remove($type);
                                                         $playertarget->getEffects()->add(new EffectInstance($type, $duration, $amplifier, $visible, $ambient, $color));
-                                                        $player->sendMessage("Successfully decreased duration for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " for " .$data[1]. "seconds in the player " .$playertarget->getName(). "!");
+                                                        if ($tickToDuration < 1) {
+                                                            $player->sendMessage("Removed effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " from " .$playertarget->getName(). ".");
+                                                        } else {
+                                                            $player->sendMessage(TF::colorize("&aDuration for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " successfully changed to " .$data[1]. " seconds in the player " .$playertarget->getName(). "!"));
+                                                        }
                                                     });
                                                     $form->setTitle("Set Duration");
-                                                    $form->addLabel("Change remaining duration of the effect");
+                                                    $form->addLabel("Change remaining duration of the effect\n \n(Putting numbers lower than 1, other characters rather than numbers or empty number will result in removing the effect from the player. You should leave the duration empty and press 'Submit' if you want to remove the effect from the player)");
                                                     $form->addInput("Put how long the duration by seconds", "Number");
                                                     $player->sendForm($form);
                                                     return $form;
@@ -936,7 +957,7 @@ class Main extends PluginBase implements Listener {
 
                                                         $playertarget->getEffects()->remove($type);
                                                         $playertarget->getEffects()->add(new EffectInstance($type, $duration, $amplifier, $visible, $ambient, $color));
-                                                        $player->sendMessage("Successfully changed visible to particle effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " as " .$data[1]. " in the player " .$playertarget->getName(). "!");
+                                                        $player->sendMessage(TF::colorize("&aParticle visibility for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " successfully changed to " .var_export($data[1], true). " in the player " .$playertarget->getName(). "!"));
                                                     });
                                                     $form->setTitle("Set Visible");
                                                     $form->addLabel("Sets whether the effect particle is visible to everyone or nobody including you");
@@ -976,7 +997,7 @@ class Main extends PluginBase implements Listener {
                                             }
                                         });
                                         $form->setTitle($effectchoosen->getType()->getName()->getText());
-                                        $form->setContent(TF::colorize("Information about this applied effect in player " .$playertarget->getName(). ":\n \n&aAmplifier: &f" .$effectchoosen->getAmplifier(). "\n&aColor: &fR: " .$effectchoosen->getColor()->getR(). " G: " .$effectchoosen->getColor()->getG(). " B: " .$effectchoosen->getColor()->getB(). " A: " .$effectchoosen->getColor()->getA(). "\n&aDuration remaining: &f" .floor($effectchoosen->getDuration() / 20). "\n&aEffect Level: &f" .$effectchoosen->getEffectLevel(). "\n&aHas expired: &f" .strval($effectchoosen->hasExpired()). "\n&aIs ambient: &f" .strval($effectchoosen->isAmbient()). "\n&aParticle visible to everyone: &f" .strval($effectchoosen->isVisible()). "\n \nWhat do you want to do with this effect?"));
+                                        $form->setContent(TF::colorize("Information about this applied effect in player " .$playertarget->getName(). ":\n \n&aAmplifier: &f" .$effectchoosen->getAmplifier(). "\n&aColor: &fR: " .$effectchoosen->getColor()->getR(). " G: " .$effectchoosen->getColor()->getG(). " B: " .$effectchoosen->getColor()->getB(). " A: " .$effectchoosen->getColor()->getA(). "\n&aDuration remaining: &f" .floor($effectchoosen->getDuration() / 20). "\n&aEffect Level: &f" .$effectchoosen->getEffectLevel(). "\n&aHas expired: &f" .var_export($effectchoosen->hasExpired(), true). "\n&aIs ambient: &f" .var_export($effectchoosen->isAmbient(), true). "\n&aParticle visible to everyone: &f" .var_export($effectchoosen->isVisible(), true). "\n \nWhat do you want to do with this effect?"));
                                         $form->addButton(TF::colorize("Decrease Duration\n&lDecreases duration"));
                                         $form->addButton(TF::colorize("Set Ambient\n&lSet effect from ambient"));
                                         $form->addButton(TF::colorize("Set Amplifier\n&lSet effect's strength"));
@@ -1000,7 +1021,7 @@ class Main extends PluginBase implements Listener {
                 });
                 $form->setTitle($playertarget->getName(). "'s Effects");
                 $form->setContent("Select an action to continue");
-                $form->addButton(TF::colorize("Add Effect\n&lAdd effect to player"));
+                $form->addButton(TF::colorize("Add Effect (/effect)\n&lAdd effect to player"));
                 $form->addButton(TF::colorize("Manage Effects\n&lManage all effects"));
                 $player->sendForm($form);
                 return $form;
