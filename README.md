@@ -38,8 +38,7 @@ You can change the `<player>` argument to any online player name as it is requir
 (Example: `/plmanager info @s`)
 
 ## Suggestions & Bug Reports
-If you have an idea of a new feature for this plugin, you can submit your idea [here!](https://github.com/mukeenanyafiq/PlayerManager/issues/new?assignees=&labels=suggestion&projects=&template=suggestion.md&title=Suggestion)
-
+If you have an idea of a new feature for this plugin, you can submit your idea [here!](https://github.com/mukeenanyafiq/PlayerManager/issues/new?assignees=&labels=suggestion&projects=&template=suggestion.md&title=Suggestion)\
 However, if you found or encounter any bugs in this plugin, you can submit your report [here!](https://github.com/mukeenanyafiq/PlayerManager/issues/new?assignees=&labels=bug&projects=&template=bug_report.md&title=Bug+Report)
 
 ## Note
