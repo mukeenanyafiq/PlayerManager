@@ -1,5 +1,5 @@
 # PlayerManager
-A PocketMine-MP Plugin that allows player to manage players and acquire players information using FormAPI!\
+A PocketMine-MP Plugin that allows player to manage players and acquire players information using [FormAPI!](https://github.com/jojoe77777/FormAPI)\
 This plugin was inspired by [PlayerInfo](https://github.com/Matthww/PlayerInfo)
 
 The player's information includes:
@@ -17,7 +17,7 @@ The player's information includes:
 - Kicking or banning player through Session category (done through commands)
 - Allows player to toggle flight or no-clipping walls
 - Editing player's attributes\
-  It can be anything such as changing player's scale (size) or making the player invisible
+  Capable of changing the player's scale (size) or making the player invisible
 
 ## Commands
 | Commands     | Description                | Permissions                       |
@@ -33,8 +33,8 @@ The player's information includes:
 | `effects`    | Opens player's effects                     | `/plmanager effects <player>`    |
 | `reload`     | Reloads PlayerManager's configuration file | `/plmanager reload`              |
 
-You can change the `<player>` argument to any online player name as it is required for the commands to work\
-(You can use `@s` as the player argument to indicate you)\
+You can change the `<player>` argument to any online player name as it is required for the command with argument to work\
+(You can use `@s` as the player (`<player>`) argument to indicate you)\
 (Example: `/plmanager info @s`)
 
 ## Suggestions & Bug Reports
