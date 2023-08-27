@@ -1,5 +1,5 @@
 name: "PlayerManager"
-description: "A plugin that allows players to obtain player's data and also managing a player!"
+description: "A plugin that allows player to manage players and acquire players information!"
 version: 1.0.0
 main: mukeenanyafiq\PlayerManager\Main
 api: 5.0.0

@@ -495,7 +495,7 @@ class Main extends PluginBase implements Listener {
                                 if ($data === null) {
                                     return true;
                                 }
-    
+
                                 $this->getServer()->getNameBans()->addBan($playertarget->getName(), $data[0], null, $player->getName());
                                 if ($data[0] === null) {
                                     $player->sendMessage(TF::colorize("&aSuccessfully banned &f" .$playertarget->getName(). "&a off from the server"));
@@ -511,7 +511,6 @@ class Main extends PluginBase implements Listener {
                             } else {
                                 $form->addInput(TF::colorize("You are about to ban &a" .$playertarget->getName(). "&f off from the server. Enter the reason why the player got banned"), "Ban reason (optional)");
                             }
-                            $form->addInput("Put how long will the ban lasts in seconds", "Ban lasts in seconds (optional)");
                             $player->sendForm($form);
                             return $form;
                         case 2:
@@ -642,9 +641,16 @@ class Main extends PluginBase implements Listener {
                                         break;
         
                                         case 1:
-                                            // If the player's max health value is less than 1, sets the player's max health value to the player's original max health value
+                                            // If the player's inputted max health value is less than 1, sets the player's inputted max health value to the player's original max health value
                                             if (intval($data[15]) < 1) {
                                                 $data[15] = $playertarget->getMaxHealth();
+                                                $playertarget->sendMessage(TF::colorize("&eThe inputted max health value is less than 1. Resetting the value to the player's original max health value (" .$playertarget->getMaxHealth(). ")"));
+                                            }
+
+                                            // If the player's inputted scale value is less than 1, sets the player's inputted scale value to the normal scale value
+                                            if (floatval($data[21]) < 1) {
+                                                $data[21] = 1;
+                                                $playertarget->sendMessage(TF::colorize("&eThe inputted scale value is less than 1. Resetting the value to the normal scale value (1)"));
                                             }
 
                                             $playertarget->setAbsorption(floatval($data[0]));
@@ -708,8 +714,8 @@ class Main extends PluginBase implements Listener {
                             $form->addInput("Set player's name tag (the name ontop of the player)", "Enter player's new name tag", $playertarget->getNameTag());
                             $form->addToggle("Set player's nametag always visible", $playertarget->isNameTagAlwaysVisible());
                             $form->addToggle("Set player's nametag visible", $playertarget->isNameTagVisible());
-                            $form->addSlider("Set player's on fire attribute", 0, $max, 1, 0);
-                            $form->addSlider("Set player's scale", 0, 5, 1, intval($playertarget->getScale()));
+                            $form->addToggle("Set player's on fire", $playertarget->isOnFire());
+                            $form->addInput("Set player's scale", "Number", strval($playertarget->getScale()));
                             $form->addToggle("Set player's on silent", $playertarget->isSilent());
                             $form->addToggle("Set player's on sneaking mode", $playertarget->isSneaking());
                             $form->addToggle("Set player's on sprinting mode", $playertarget->isSprinting());
@@ -784,7 +790,7 @@ class Main extends PluginBase implements Listener {
                                 $calculated = intval($data[1]) * 20;
 
                                 $playertarget->getEffects()->add(new EffectInstance($effectlist[$data[0]], intval($calculated), intval($data[2]), $data[3]));
-                                $player->sendMessage("Successfully added a new effect " .$language->translateString($effectlist[$data[0]]->getName()->getText()). " to " .$playertarget->getName(). " for " .intval($data[1]). " seconds with amplifier " .$data[2]. "!");
+                                $player->sendMessage(TF::colorize("&aSuccessfully added a new effect " .$language->translateString($effectlist[$data[0]]->getName()->getText()). " to " .$playertarget->getName(). " for " .intval($data[1]). " seconds with amplifier " .$data[2]. "!"));
                             });
                             $form->setTitle("Add Effects");
                             $form->addDropdown("Select an effect to be added to " .$playertarget->getName(), ["Absorption", "Blindness", "Conduit Power", "Darkness", "Fatal Poison", "Fire Resistance", "Haste", "Health Boost", "Hunger", "Instant Damage", "Instant Health", "Invisibility", "Jump Boost", "Levitation", "Mining Fatigue", "Nausea", "Night Vision", "Poison", "Regeneration", "Resistance", "Saturation", "Slowness", "Speed", "Strength", "Water Breathing", "Weakness", "Wither"]);
@@ -816,28 +822,6 @@ class Main extends PluginBase implements Listener {
                                                             return true;
                                                         }
 
-                                                        if ($data[1] === null) {
-                                                            $data[1] = 0;
-                                                        }
-
-                                                        $tickToDuration = intval($data[1]) * 20;
-
-                                                        $effectchoosen->decreaseDuration(intval($tickToDuration));
-                                                        $player->sendMessage(TF::colorize("&aDuration for effect " .$language->translateString($effectchoosen->getType()->getName()->getText()). " successfully decreased to " .$data[1]. "seconds in the player " .$playertarget->getName(). "!"));
-                                                    });
-                                                    $form->setTitle("Decrease Duration");
-                                                    $form->addLabel("Decrease duration will decreasing the duration of the effect so that it expires so quickly");
-                                                    $form->addInput("Put how long the duration decreases by seconds", "Number");
-                                                    $player->sendForm($form);
-                                                    return $form;
-                                                case 1:
-                                                    $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
-                                                        $language = Server::getInstance()->getLanguage();
-
-                                                        if ($data === null) {
-                                                            return true;
-                                                        }
-
                                                         $type = $effectchoosen->getType();
                                                         $duration = $effectchoosen->getDuration();
                                                         $amplifier = $effectchoosen->getAmplifier();
@@ -854,7 +838,7 @@ class Main extends PluginBase implements Listener {
                                                     $form->addToggle("Is the effect from ambient environment", $effectchoosen->isAmbient());
                                                     $player->sendForm($form);
                                                     return $form;
-                                                case 2:
+                                                case 1:
                                                     $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
                                                         $language = Server::getInstance()->getLanguage();
 
@@ -879,7 +863,7 @@ class Main extends PluginBase implements Listener {
                                                     $form->addSlider("Effect strength/amplifier", 0, 255, 1, $effectchoosen->getAmplifier());
                                                     $player->sendForm($form);
                                                     return $form;
-                                                case 3:
+                                                case 2:
                                                     $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
                                                         $language = Server::getInstance()->getLanguage();
 
@@ -906,7 +890,7 @@ class Main extends PluginBase implements Listener {
                                                     $form->addSlider("A (Alpha/Transparency)", 0, 255, 1, $effectchoosen->getColor()->getA());
                                                     $player->sendForm($form);
                                                     return $form;
-                                                case 4:
+                                                case 3:
                                                     $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
                                                         $language = Server::getInstance()->getLanguage();
 
@@ -940,7 +924,7 @@ class Main extends PluginBase implements Listener {
                                                     $form->addInput("Put how long the duration by seconds", "Number");
                                                     $player->sendForm($form);
                                                     return $form;
-                                                case 5:
+                                                case 4:
                                                     $form = new CustomForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
                                                         $language = Server::getInstance()->getLanguage();
 
@@ -964,7 +948,7 @@ class Main extends PluginBase implements Listener {
                                                     $form->addToggle("Is the effect particle visible", $effectchoosen->isVisible());
                                                     $player->sendForm($form);
                                                     return $form;
-                                                case 6:
+                                                case 5:
                                                     $form = new ModalForm(function (Player $player, $data = null) use ($effectchoosen, $playertarget) {
                                                         if ($data === null) {
                                                             return true;
@@ -998,7 +982,6 @@ class Main extends PluginBase implements Listener {
                                         });
                                         $form->setTitle($effectchoosen->getType()->getName()->getText());
                                         $form->setContent(TF::colorize("Information about this applied effect in player " .$playertarget->getName(). ":\n \n&aAmplifier: &f" .$effectchoosen->getAmplifier(). "\n&aColor: &fR: " .$effectchoosen->getColor()->getR(). " G: " .$effectchoosen->getColor()->getG(). " B: " .$effectchoosen->getColor()->getB(). " A: " .$effectchoosen->getColor()->getA(). "\n&aDuration remaining: &f" .floor($effectchoosen->getDuration() / 20). "\n&aEffect Level: &f" .$effectchoosen->getEffectLevel(). "\n&aHas expired: &f" .var_export($effectchoosen->hasExpired(), true). "\n&aIs ambient: &f" .var_export($effectchoosen->isAmbient(), true). "\n&aParticle visible to everyone: &f" .var_export($effectchoosen->isVisible(), true). "\n \nWhat do you want to do with this effect?"));
-                                        $form->addButton(TF::colorize("Decrease Duration\n&lDecreases duration"));
                                         $form->addButton(TF::colorize("Set Ambient\n&lSet effect from ambient"));
                                         $form->addButton(TF::colorize("Set Amplifier\n&lSet effect's strength"));
                                         $form->addButton(TF::colorize("Set Color\n&lSet effect's color"));

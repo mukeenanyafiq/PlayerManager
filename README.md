@@ -1,5 +1,5 @@
 # PlayerManager
-A PocketMine-MP Plugin that allows admins to manage players and acquire players information using FormAPI!\
+A PocketMine-MP Plugin that allows player to manage players and acquire players information using FormAPI!\
 This plugin was inspired by [PlayerInfo](https://github.com/Matthww/PlayerInfo)
 
 The player's information includes:
@@ -37,6 +37,11 @@ You can change the `<player>` argument to any online player name as it is requir
 (You can use `@s` as the player argument to indicate you)\
 (Example: `/plmanager info @s`)
 
+## Suggestions & Bug Reports
+If you have an idea of a new feature for this plugin, you can submit your idea [here!](https://github.com/mukeenanyafiq/PlayerManager/issues/new?assignees=&labels=suggestion&projects=&template=suggestion.md&title=Suggestion)
+
+However, if you found or encounter any bugs in this plugin, you can submit your report [here!](https://github.com/mukeenanyafiq/PlayerManager/issues/new?assignees=&labels=bug&projects=&template=bug_report.md&title=Bug+Report)
+
 ## Note
-This is **my very first PocketMine-MP plugin**. Expect some bad or inefficient codes.\
-Any suggestions, bug-reports, and pull-requests are accepted
+This is **my very first PocketMine-MP plugin**. Expect some unorganized scripts, bad and inefficient codes.\
+Any suggestions, bug-reports, and pull-requests are welcomed
