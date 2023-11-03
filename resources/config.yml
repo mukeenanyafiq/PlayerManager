@@ -3,7 +3,7 @@
 
 # "firstplace" - Show player's specific information in the first place
 # Types:
-# "model" - Shows the player's phone model
+# "model" - Shows the player's phone model (Default)
 # "os" - Shows the player's device operating system
 # "ip" - Shows the player's IP address
 # "port" - Shows the player's port
@@ -11,12 +11,12 @@
 # "ui" - Shows the player's UI profile
 # "gui" - Shows the player's GUI scale
 # "controls" - Shows the player's control
-# "uuid" - Shows the player's UUID (Unique ID) (which is some long character that minecraft assign the player so that their username doesnt matter)
+# "uuid" - Shows the player's UUID (Unique ID)
 # "health" - Shows the player's health
 # "position" - Shows the player's position
 # "gamemode" - Shows the player's gamemode
 
-# Support case insensitive so even if you're still inputting the type with some upper case words, it would still work. (ex: "Model", "oS")
+# Support case insensitive
 # Anything inputted other than the list on the top will be set to 'model' by default.
 firstplace: model
 

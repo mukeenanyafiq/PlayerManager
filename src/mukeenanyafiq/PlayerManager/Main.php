@@ -16,6 +16,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\event\Listener;
+use pocketmine\permission\Permission;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
@@ -39,7 +40,7 @@ class Main extends PluginBase implements Listener {
     ];
 
     public const PLAYER_MANAGE_CATEGORY = [
-        "session",
+        "permissions",
         "ability",
         "attributes",
         "effects"
@@ -48,7 +49,7 @@ class Main extends PluginBase implements Listener {
     public const AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER = [
         "info",
         "reload",
-        "session",
+        "permissions",
         "ability",
         "attributes",
         "effects"
@@ -60,13 +61,13 @@ class Main extends PluginBase implements Listener {
 
     public function onLoad(): void {
         if (in_array($this->getConfig()->get("firstplace"), $this::FIRST_PLACE_TYPE) === false) {
-            $this->getLogger()->warning("Unknown firstplace type: '" .strtolower($this->getConfig()->get("firstplace")). "'. Check any misspells or typos you might have made. For now, the type will be set to 'model' for default");
+            $this->getLogger()->warning(`Unknown "firstplace" type: '` .strtolower($this->getConfig()->get("firstplace")). `'. Check any typos you might have made. For now, the type will be set to 'model' for default`);
             $this->firstplacetypechoosen = "model";
         } else {
             $this->firstplacetypechoosen = $this->getConfig()->get("firstplace");
         }
         if (!is_array($this->getConfig()->get("blacklist"))) {
-            $this->getLogger()->warning(`"blacklist" option is not an array class. If you don't know, an array class looks like this: "[]". Change the "blacklist" option class to array with the example putted on this message. For now, no player will be blacklisted from using PlayerManager form.`);
+            $this->getLogger()->warning(`An error in the 'blacklist' option was found. For now, no player will be blacklisted from using PlayerManager form.`);
         } else {
             if (count($this->getConfig()->get("blacklist")) > 0) {
                 if (count($this->getConfig()->get("blacklist")) === 1) {
@@ -82,7 +83,7 @@ class Main extends PluginBase implements Listener {
         switch ($command->getName()) {
             case "plmanager":
                 if (!$commandSender->hasPermission("playermanager.command.plmanager")) {
-                    $commandSender->sendMessage("This command is only intended for operators!");
+                    $commandSender->sendMessage("This command is only intended for operators and allowed players!");
                     return true;
                 }
 
@@ -94,7 +95,7 @@ class Main extends PluginBase implements Listener {
                             return true;
                         } else {
                             $commandSender->sendMessage(TF::colorize("&cERROR: Invalid argument '" .$args[0]. "'."));
-                            $commandSender->sendMessage("Available argument ('reload' is the only argument that is usable from everywhere): " .implode(", ", $this::AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER));
+                            $commandSender->sendMessage("Available argument: " .implode(", ", $this::AVAILABLE_ARGUMENT_CMD_PLAYERMANAGER));
                             return true;
                         }
                     }
@@ -104,13 +105,13 @@ class Main extends PluginBase implements Listener {
                         $commandSender->sendMessage(TF::colorize("&aPlayerManager's Configuration file (config.yml) has been reloaded."));
                         $this->getLogger()->info("PlayerManager's configuration file (located in " .$this->getDataFolder(). "config.yml) has been reloaded by " .$commandSender->getName(). ".");
                         if (in_array($this->getConfig()->get("firstplace"), $this::FIRST_PLACE_TYPE) === false) {
-                            $commandSender->sendMessage(TF::colorize("&eUnknown firstplace type: '" .strtolower($this->getConfig()->get("firstplace")). "'. Check any misspells or typos you might have made. For now, the type will be set to 'model' for default"));
+                            $commandSender->sendMessage(TF::colorize("&eUnknown firstplace type: '" .strtolower($this->getConfig()->get("firstplace")). "'. Check any typos you might have made. For now, the type will be set to 'model' for default"));
                             $this->firstplacetypechoosen = "model";
                         } else {
                             $this->firstplacetypechoosen = $this->getConfig()->get("firstplace");
                         } 
                         if (!is_array($this->getConfig()->get("blacklist"))) {
-                            $commandSender->sendMessage(TF::colorize("&e'blacklist' option is not an array class. If you don't know, an array class looks like this: '[]'. Change the 'blacklist' option class to array. For now, no player will be blacklisted from using PlayerManager form."));
+                            $commandSender->sendMessage(TF::colorize("&eAn error in the 'blacklist' option was found. For now, no player will be blacklisted from using PlayerManager form."));
                         } else {
                             if (count($this->getConfig()->get("blacklist")) > 0) {
                                 if (count($this->getConfig()->get("blacklist")) === 1) {
@@ -135,7 +136,7 @@ class Main extends PluginBase implements Listener {
                 if ($commandSender instanceof Player) {
                     if (is_array($this->getConfig()->get("blacklist"))) {
                         if (in_array($commandSender->getName(), $this->getConfig()->get("blacklist"))) {
-                            $commandSender->sendMessage(TF::colorize("&cSorry, you are not allowed to use this command. Even though you have the permission to use the command, you're on the list of the blacklisted players. If you have the access to the server's files, you can delete your username off from the list in the configuration file."));
+                            $commandSender->sendMessage(TF::colorize("&cSorry, you are not allowed to use this command."));
                             return true;
                         }
                     }
@@ -150,7 +151,7 @@ class Main extends PluginBase implements Listener {
     }
 
     public function openPlayerManagerForm($player, $args) {
-        $os = ["Unknown", "Android", "iOS", "macOS", "FireOS", "GearVR", "HoloLens", "Windows 10", "Windows", "Dedicated", "Orbis", "Playstation 4", "Nintento Switch", "Xbox One"];
+        $os = ["Unknown", "Android", "iOS", "macOS", "FireOS", "GearVR", "HoloLens", "Windows", "Windows", "Dedicated", "Orbis", "PlayStation", "Nintento Switch", "Xbox One"];
         $UI = ["Classic UI", "Pocket UI"];
         $Controls = ["Unknown", "Mouse", "Touch", "Controller"];
         $GUI = [-2 => "Minimum", -1 => "Medium", 0 => "Maximum"];
@@ -403,10 +404,8 @@ class Main extends PluginBase implements Listener {
                 }
             });
             $form->setTitle($this::FORMTITLE);
-            $form->setContent("PlayerManager v" .$currpl->getDescription()->getVersion(). "\nCreated by " .array_values($currpl->getDescription()->getAuthors())[0]. "\n \nSelect an action to continue");
+            $form->setContent("PlayerManager v" .$currpl->getDescription()->getVersion(). "\n \nSelect an action to continue");
             $form->addButton("Manage a player\n" .TF::BOLD. "Managing a player");
-            $form->addButton("Manage a banned player\n" .TF::BOLD. "Managing a banned player");
-            $form->addButton("Reload\n" .TF::BOLD. "Reload configuration");
             $player->sendForm($form);
             return $form;
         }
@@ -429,7 +428,7 @@ class Main extends PluginBase implements Listener {
 
             switch ($data) {
                 case 0:
-                    $this->openPlayerManageCategory($player, "session", $target);
+                    $this->openPlayerManageCategory($player, "permissions", $target);
                 break;
 
                 case 1:
@@ -447,7 +446,7 @@ class Main extends PluginBase implements Listener {
         });
         $form->setTitle($playerchoosen->getName());
         $form->setContent(TF::colorize("&aDisplay Name: &f" .$playerchoosen->getDisplayName(). "\n&aModel: &f" .$clientdata["DeviceModel"]. "\n&aOS: &f" .$os[$clientdata["DeviceOS"]]. "\n&aIP: &f" .$playerchoosen->getNetworkSession()->getIp(). "\n&aPort: &f" .$playerchoosen->getNetworkSession()->getPort(). "\n&aPing: &f" .$playerchoosen->getNetworkSession()->getPing(). "ms\n&aUI: &f" .$UI[$clientdata["UIProfile"]]. "\n&aGUI Scale: &f" .$GUI[$clientdata["GuiScale"]]. "\n&aControls: &f" .$Controls[$clientdata["CurrentInputMode"]]. "\n&aUUID: &f" .$playerchoosen->getUniqueId(). "\n&aHealth: &f" .$playerchoosen->getHealth(). " HP\n&aPosition: &fX: " .$playerchoosen->getPosition()->getFloorX() . ", Y: " .$playerchoosen->getPosition()->getFloorY() . ", Z: " .$playerchoosen->getPosition()->getFloorZ(). "\n&aGamemode: &f" .$playerchoosen->getGamemode()->name()));
-        $form->addButton(TF::colorize("Session\n&lPlayer's session"));
+        $form->addButton(TF::colorize("Permissions\n&lPlayer's permissions"));
         $form->addButton(TF::colorize("Ability\n&lPlayer's ability"));
         $form->addButton(TF::colorize("Attributes\n&lPlayer's attributes"));
         $form->addButton(TF::colorize("Effects\n&lPlayer's effects"));
@@ -458,7 +457,7 @@ class Main extends PluginBase implements Listener {
     public function openPlayerManageCategory($player, string $category, $target) {
         $playertarget = $this->getServer()->getPlayerExact($target);
         switch ($category) {
-            case "session":
+            case "permissions":
                 $form = new SimpleForm(function (Player $player, $data = null) use ($playertarget) {
                     if ($data === null) {
                         return true;
@@ -470,23 +469,12 @@ class Main extends PluginBase implements Listener {
                                 if ($data === null) {
                                     return true;
                                 }
-    
-                                if ($data[1] === true) {
-                                    $player->sendMessage(TF::colorize("&aSuccessfully kicked &f" .$playertarget->getName(). "&a off from the server for the reason: " .$data[0]));
-                                    $playertarget->kick("Kicked by admin. Reason: " .$data[0], null, "$data[0]");
-                                } else {
-                                    if ($data[0] === null) {
-                                        $player->sendMessage(TF::colorize("&aSuccessfully kicked &f" .$playertarget->getName(). "&a off from the server for the reason: " .$data[0]));
-                                        $playertarget->kick("Kicked by admin. Reason: " .$data[0], null, "Kicked by admin. Reason: " .$data[0]);
-                                    } else {
-                                        $player->sendMessage(TF::colorize("&aSuccessfully kicked &f" .$playertarget->getName(). "&a off from the server"));
-                                        $playertarget->kick("Kicked by admin", null, "Kicked by admin");
-                                    }
-                                }
+
+                                $playertarget->setBasePermission($data[0], true);
+                                $player->sendMessage(TF::colorize(`&aAdded permission "` .$data[0]. `" to ` .$playertarget->getName()));
                             });
-                            $form->setTitle("Kick");
-                            $form->addInput(TF::colorize("You are about to kick &a" .$playertarget->getName(). "&f off from the server. Enter the reason why the player got kicked"), "Kick reason (optional)");
-                            $form->addToggle(TF::colorize("Only shows the reason in the &a" .$playertarget->getName(). "&f's disconnected screen"));
+                            $form->setTitle("Add Perm");
+                            $form->addInput(TF::colorize("Enter the permission name you would like to give to &l" .$playertarget->getName(). "&r below"), "Enter the permission name");
                             $player->sendForm($form);
                             return $form;
                         case 1:
@@ -495,55 +483,19 @@ class Main extends PluginBase implements Listener {
                                     return true;
                                 }
 
-                                $this->getServer()->getNameBans()->addBan($playertarget->getName(), $data[0], null, $player->getName());
-                                if ($data[0] === null) {
-                                    $player->sendMessage(TF::colorize("&aSuccessfully banned &f" .$playertarget->getName(). "&a off from the server"));
-                                    $playertarget->kick("You are banned from this server", null, "You are banned from this server");
-                                } else {  
-                                    $player->sendMessage(TF::colorize("&aSuccessfully banned &f" .$playertarget->getName(). "&a off from the server for the reason: " .$data[0]));
-                                    $playertarget->kick("You are banned from this server. Reason: " .$data[0], null, "You are banned from this server. Reason: " .$data[0]);
-                                }
+                                $playertarget->unsetBasePermission($data[0]);
+                                $player->sendMessage(TF::colorize(`&aRemoved permission "` .$data[0]. `" from ` .$playertarget->getName()));
                             });
-                            $form->setTitle("Ban");
-                            if ($playertarget->getName() === $player->getName()) {
-                                $form->addInput(TF::colorize("WARNING! You are about to ban yourself off from the server. This means that you will not be able to join the server again. Enter the reason why you got banned"), "Ban reason (optional)");
-                            } else {
-                                $form->addInput(TF::colorize("You are about to ban &a" .$playertarget->getName(). "&f off from the server. Enter the reason why the player got banned"), "Ban reason (optional)");
-                            }
-                            $player->sendForm($form);
-                            return $form;
-                        case 2:
-                            $form = new CustomForm(function (Player $player, $data = null) use ($playertarget) {
-                                if ($data === null) {
-                                    return true;
-                                }
-    
-                                $this->getServer()->getIPBans()->addBan($playertarget->getNetworkSession()->getIp(), $data[1], null, $player->getName());
-                                if ($data[1] === null) {
-                                    $player->sendMessage(TF::colorize("&aSuccessfully IP-ban &f" .$playertarget->getName(). "&a off from the server"));
-                                    $playertarget->kick("You are banned from this server. Reason: IP banned", null, "You are banned from this server. Reason: IP banned");
-                                } else {
-                                    $player->sendMessage(TF::colorize("&aSuccessfully IP-ban &f" .$playertarget->getName(). "&a off from the server for the reason: " .$data[1]));
-                                    $playertarget->kick("You are banned from this server. Reason: " .$data[1], null, "You are banned from this server. Reason: " .$data[1]);
-                                }
-                            });
-                            $form->setTitle("Ban IP");
-                            if ($playertarget->getName() === $player->getName()) {
-                                $form->addLabel(TF::colorize("NOTE: IP-banning &a" .$playertarget->getName(). "&f will only ban the player's IP and their IP could change anytime! We recommend you to use 'Ban' option instead"));
-                                $form->addInput(TF::colorize("WARNING! You are about to IP-ban yourself off from the server. This means that you will not be able to join the server again unless your IP changed. Enter the reason why you got IP-banned"), "Ban reason (optional)");
-                            } else {
-                                $form->addLabel(TF::colorize("NOTE: IP-banning &a" .$playertarget->getName(). "&f will only ban the player's IP and their IP could change anytime! We recommend you to use 'Ban' option instead"));
-                                $form->addInput(TF::colorize("You are about to IP-ban &a" .$playertarget->getName(). "&f off from the server. Enter the reason why the player got IP-banned"), "Ban reason (optional)");
-                            }
+                            $form->setTitle("Remove Perm");
+                            $form->addInput(TF::colorize("Enter the permission name you would like to remove from &l" .$playertarget->getName(). "&r below"), "Enter the permission name");
                             $player->sendForm($form);
                             return $form;
                     }
                 });
-                $form->setTitle($playertarget->getName(). "'s Session");
+                $form->setTitle($playertarget->getName(). "'s Permissions");
                 $form->setContent("Select an action to continue");
-                $form->addButton(TF::colorize("Kick (/kick)\n&lKick the player"));
-                $form->addButton(TF::colorize("Ban (/ban)\n&lBan the player"));
-                $form->addButton(TF::colorize("Ban IP (/ban-ip)\n&lBan IP the player"));
+                $form->addButton(TF::colorize("Add Perm\n&lAdd perm to player"));
+                $form->addButton(TF::colorize("Remove Perm\n&lRemove perm from player"));
                 $player->sendForm($form);
                 return $form;
             case "ability":
@@ -600,18 +552,9 @@ class Main extends PluginBase implements Listener {
                 $player->sendForm($form);
                 return $form;
             case "attributes":
-                $gamemodes = [
-                    0 => "adventure", 
-                    1 => "survival", 
-                    2 => "creative", 
-                    3 => "spectator"
-                ];
-
-                $gamemodes2 = array_flip($gamemodes);
-
                 $max = 300;
 
-                $form = new SimpleForm(function (Player $player, $data = null) use ($playertarget, $gamemodes, $gamemodes2, $max) {
+                $form = new SimpleForm(function (Player $player, $data = null) use ($playertarget, $max) {
                     if ($data === null) {
                         return null;
                     }
@@ -624,12 +567,12 @@ class Main extends PluginBase implements Listener {
                         break;
 
                         case 1:
-                            $form = new CustomForm(function (Player $player, $data = null) use ($playertarget, $gamemodes) {
+                            $form = new CustomForm(function (Player $player, $data = null) use ($playertarget) {
                                 if ($data === null) {
                                     return true;
                                 }
         
-                                $form = new ModalForm(function (Player $player, $d2 = null) use ($playertarget, $gamemodes, $data) {
+                                $form = new ModalForm(function (Player $player, $d2 = null) use ($playertarget, $data) {
                                     if ($d2 === null) {
                                         return true;
                                     }
@@ -652,48 +595,44 @@ class Main extends PluginBase implements Listener {
                                                 $playertarget->sendMessage(TF::colorize("&eThe inputted scale value is less than 1. Resetting the value to the normal scale value (1)"));
                                             }
 
-                                            $playertarget->setAbsorption(floatval($data[0]));
-                                            $playertarget->setAirSupplyTicks(intval($data[1]));
-                                            $playertarget->setAutoJump(boolval($data[2]));
-                                            $playertarget->setBreathing(boolval($data[3]));
-                                            $playertarget->setCanClimb(boolval($data[4]));
-                                            $playertarget->setCanClimbWalls(boolval($data[5]));
-                                            $playertarget->setDisplayName(strval($data[6]));
-                                            $playertarget->setFireTicks(intval($data[7]));
-                                            $playertarget->setGamemode(GameMode::fromString($gamemodes[$data[8]]));
-                                            $playertarget->setGliding(boolval($data[9]));
-                                            $playertarget->setGravity(floatval($data[10]));
-                                            $playertarget->setHasGravity(boolval($data[11]));
-                                            $playertarget->setHealth(floatval($data[12]));
-                                            $playertarget->setInvisible(boolval($data[13]));
-                                            $playertarget->setMaxAirSupplyTicks(intval($data[14]));
-                                            $playertarget->setMaxHealth(intval($data[15]));
-                                            $playertarget->setMovementSpeed(floatval($data[16]));
-                                            $playertarget->setNameTag(strval($data[17]));
-                                            $playertarget->setNameTagAlwaysVisible(boolval($data[18]));
-                                            $playertarget->setNameTagVisible(boolval($data[19]));
-                                            $playertarget->setOnFire(intval($data[20]));
-                                            $playertarget->setScale(floatval($data[21]));
-                                            $playertarget->setSilent(boolval($data[22]));
-                                            $playertarget->setSneaking(boolval($data[23]));
-                                            $playertarget->setSprinting(boolval($data[24]));
-                                            $playertarget->setSwimming(boolval($data[25]));
+                                            $playertarget->setAirSupplyTicks(intval($data[0]));
+                                            $playertarget->setAutoJump(boolval($data[1]));
+                                            $playertarget->setBreathing(boolval($data[2]));
+                                            $playertarget->setCanClimb(boolval($data[3]));
+                                            $playertarget->setCanClimbWalls(boolval($data[4]));
+                                            $playertarget->setDisplayName(strval($data[5]));
+                                            $playertarget->setFireTicks(intval($data[6]));
+                                            $playertarget->setGliding(boolval($data[7]));
+                                            $playertarget->setGravity(floatval($data[8]));
+                                            $playertarget->setHasGravity(boolval($data[9]));
+                                            $playertarget->setHealth(floatval($data[10]));
+                                            $playertarget->setMaxAirSupplyTicks(intval($data[11]));
+                                            $playertarget->setMaxHealth(intval($data[12]));
+                                            $playertarget->setMovementSpeed(floatval($data[13]));
+                                            $playertarget->setNameTag(strval($data[14]));
+                                            $playertarget->setNameTagAlwaysVisible(boolval($data[15]));
+                                            $playertarget->setNameTagVisible(boolval($data[16]));
+                                            $playertarget->setOnFire(intval($data[17]));
+                                            $playertarget->setScale(floatval($data[18]));
+                                            $playertarget->setSilent(boolval($data[19]));
+                                            $playertarget->setSneaking(boolval($data[20]));
+                                            $playertarget->setSprinting(boolval($data[21]));
+                                            $playertarget->setSwimming(boolval($data[22]));
                                             $player->sendMessage(TF::colorize("&a" .$playertarget->getName(). "'s attributes successfully changed! Some attributes may lasts until the player died or disconnected"));
                                         break;
                                     }
                                 });
                                 $form->setTitle($this::FORMTITLE. " - Confirmation");
                                 if ($playertarget->getName() === $player->getName()) {
-                                    $form->setContent("Are you sure you want to keep changing your attribute? This change could be a mess and there is no way to revert it back unless you remembered/saved the attributes OR you died/disconnected!");
+                                    $form->setContent("Are you sure you want to change your attribute? This change could be a mess and there is no way to revert it back!");
                                 } else {
-                                    $form->setContent("Are you sure you want to keep changing " .$playertarget->getName(). "'s attribute? This change could be a mess and there is no way to revert it back unless you remembered/saved the attributes OR the player died/disconnected!");
+                                    $form->setContent("Are you sure you want to keep change " .$playertarget->getName(). "'s attribute? This change could be a mess and there is no way to revert it back!");
                                 }
                                 $form->setButton1("Yes");
                                 $form->setButton2("No");
                                 $player->sendForm($form);
                             });
                             $form->setTitle("Set " .$playertarget->getName(). "'s Attributes");
-                            $form->addSlider("Set player's absorption", 0, $max, 1, intval($playertarget->getAbsorption()));
                             $form->addSlider("Set player's air supply ticks", 0, $playertarget->getMaxAirSupplyTicks(), 1, $playertarget->getAirSupplyTicks());
                             $form->addToggle("Set player's autojump", $playertarget->hasAutoJump());
                             $form->addToggle("Set player is breathing", $playertarget->isBreathing());
@@ -701,12 +640,10 @@ class Main extends PluginBase implements Listener {
                             $form->addToggle("Set player can climb walls", $playertarget->canClimbWalls());
                             $form->addInput("Set player's display name", "Enter player's new display name", $playertarget->getDisplayName());
                             $form->addInput("Set player on fire for an inputted seconds", "Number", strval($playertarget->getFireTicks()));
-                            $form->addDropdown("Set player's gamemode", ["Adventure Mode", "Survival Mode", "Creative Mode", "Spectator Mode"], $gamemodes2[strtolower($playertarget->getGamemode()->name())]);
                             $form->addToggle("Set player is glidng", $playertarget->isGliding());
                             $form->addInput("Set player's gravity", "Number", strval($playertarget->getGravity()));
                             $form->addToggle("Set player has gravity", $playertarget->hasGravity());
                             $form->addInput("Set player's health", "Number", strval($playertarget->getHealth()));
-                            $form->addToggle("Set player is invisible", $playertarget->isInvisible());
                             $form->addInput("Set player's max air supply ticks", "Number", strval($playertarget->getMaxAirSupplyTicks()));
                             $form->addInput("Set player's max health", "Number", strval($playertarget->getMaxHealth()));
                             $form->addInput("Set player's movement speed", "Number", strval($playertarget->getMovementSpeed()));
@@ -767,38 +704,6 @@ class Main extends PluginBase implements Listener {
 
                     switch ($data) {
                         case 0:
-                            $form = new CustomForm(function (Player $player, $data = null) use ($playertarget, $effectlist) {
-                                $language = Server::getInstance()->getLanguage();
-
-                                if ($data === null) {
-                                    return true;
-                                }
-                                
-                                // The input data will be turned into integer. Integer only accepts numbers. No decimals and no other character than numbers.
-                                // If you tried to put other characters than numbers in it or putting no number in the input, intval() will return number "0" as failure
-
-                                // 0 seconds is an instant expired effect. An effect with 0 seconds is like giving the player nothing
-                                // If the seconds inputted is under 1 second, then it will return as 30 seconds cause that's the default effect duration if you use /effect command if no duration specified
-                                if (intval($data[1]) < 1) {
-                                    $data[1] = 30;
-                                }
-
-                                // Minecraft produces ticks, and a second on real life time equals to 20 in-game ticks.
-                                // Multiplying the real effect seconds by 20 ticks, and the game will acts as the effect seconds was using the real effect seconds.
-                                // If you tried to print $calculated, it will return the real effect seconds but multiplied by 20.
-                                $calculated = intval($data[1]) * 20;
-
-                                $playertarget->getEffects()->add(new EffectInstance($effectlist[$data[0]], intval($calculated), intval($data[2]), $data[3]));
-                                $player->sendMessage(TF::colorize("&aSuccessfully added a new effect " .$language->translateString($effectlist[$data[0]]->getName()->getText()). " to " .$playertarget->getName(). " for " .intval($data[1]). " seconds with amplifier " .$data[2]. "!"));
-                            });
-                            $form->setTitle("Add Effects");
-                            $form->addDropdown("Select an effect to be added to " .$playertarget->getName(), ["Absorption", "Blindness", "Conduit Power", "Darkness", "Fatal Poison", "Fire Resistance", "Haste", "Health Boost", "Hunger", "Instant Damage", "Instant Health", "Invisibility", "Jump Boost", "Levitation", "Mining Fatigue", "Nausea", "Night Vision", "Poison", "Regeneration", "Resistance", "Saturation", "Slowness", "Speed", "Strength", "Water Breathing", "Weakness", "Wither"]);
-                            $form->addInput("Put how many duration you want to effect to apply until expired as seconds (optional)", "Number");
-                            $form->addSlider("Put how strong the effect that is applied (optional)", 0, 255, 1);
-                            $form->addToggle("Particle effect is visible to everyone (leave it as true for default)", true);
-                            $player->sendForm($form);
-                            return $form;
-                        case 1:
                             $form = new SimpleForm(function (Player $player, $data = null) use ($playertarget) {
                                 if ($data === null) {
                                     return true;
@@ -919,7 +824,7 @@ class Main extends PluginBase implements Listener {
                                                         }
                                                     });
                                                     $form->setTitle("Set Duration");
-                                                    $form->addLabel("Change remaining duration of the effect\n \n(Putting numbers lower than 1, other characters rather than numbers or empty number will result in removing the effect from the player. You should leave the duration empty and press 'Submit' if you want to remove the effect from the player)");
+                                                    $form->addLabel("Change remaining duration of the effect\n \n(Putting numbers lower than 1, other characters rather than numbers or empty number will result in removing the effect from the player.)");
                                                     $form->addInput("Put how long the duration by seconds", "Number");
                                                     $player->sendForm($form);
                                                     return $form;
@@ -1003,7 +908,6 @@ class Main extends PluginBase implements Listener {
                 });
                 $form->setTitle($playertarget->getName(). "'s Effects");
                 $form->setContent("Select an action to continue");
-                $form->addButton(TF::colorize("Add Effect (/effect)\n&lAdd effect to player"));
                 $form->addButton(TF::colorize("Manage Effects\n&lManage all effects"));
                 $player->sendForm($form);
                 return $form;
