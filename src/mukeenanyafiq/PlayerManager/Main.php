@@ -552,9 +552,7 @@ class Main extends PluginBase implements Listener {
                 $player->sendForm($form);
                 return $form;
             case "attributes":
-                $max = 300;
-
-                $form = new SimpleForm(function (Player $player, $data = null) use ($playertarget, $max) {
+                $form = new SimpleForm(function (Player $player, $data = null) use ($playertarget) {
                     if ($data === null) {
                         return null;
                     }
@@ -667,37 +665,7 @@ class Main extends PluginBase implements Listener {
                 $player->sendForm($form);
                 return $form;
             case "effects":
-                $effectlist = [
-                    0 => VanillaEffects::ABSORPTION(),
-                    1 => VanillaEffects::BLINDNESS(),
-                    2 => VanillaEffects::CONDUIT_POWER(),
-                    3 => VanillaEffects::DARKNESS(),
-                    4 => VanillaEffects::FATAL_POISON(),
-                    5 => VanillaEffects::FIRE_RESISTANCE(),
-                    6 => VanillaEffects::HASTE(),
-                    7 => VanillaEffects::HEALTH_BOOST(),
-                    8 => VanillaEffects::HUNGER(),
-                    9 => VanillaEffects::INSTANT_DAMAGE(),
-                    10 => VanillaEffects::INSTANT_HEALTH(),
-                    11 => VanillaEffects::INVISIBILITY(),
-                    12 => VanillaEffects::JUMP_BOOST(),
-                    13 => VanillaEffects::LEVITATION(),
-                    14 => VanillaEffects::MINING_FATIGUE(),
-                    15 => VanillaEffects::NAUSEA(),
-                    16 => VanillaEffects::NIGHT_VISION(),
-                    17 => VanillaEffects::POISON(),
-                    18 => VanillaEffects::REGENERATION(),
-                    19 => VanillaEffects::RESISTANCE(),
-                    20 => VanillaEffects::SATURATION(),
-                    21 => VanillaEffects::SLOWNESS(),
-                    22 => VanillaEffects::SPEED(),
-                    23 => VanillaEffects::STRENGTH(),
-                    24 => VanillaEffects::WATER_BREATHING(),
-                    25 => VanillaEffects::WEAKNESS(),
-                    26 => VanillaEffects::WITHER()
-                ];
-
-                $form = new SimpleForm(function (Player $player, $data = null) use ($playertarget, $effectlist) {
+                $form = new SimpleForm(function (Player $player, $data = null) use ($playertarget) {
                     if ($data === null) {
                         return true;
                     }
