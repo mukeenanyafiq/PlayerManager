@@ -13,4 +13,4 @@ commands:
 permissions:
   playermanager.command.plmanager:
     default: op
-    description: "Allows user/player to open PlayerManager form"
+    description: "Allows player to open PlayerManager form"

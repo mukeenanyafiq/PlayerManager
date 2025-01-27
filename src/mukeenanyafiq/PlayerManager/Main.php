@@ -63,9 +63,8 @@ class Main extends PluginBase implements Listener {
         if (in_array($this->getConfig()->get("firstplace"), $this::FIRST_PLACE_TYPE) === false) {
             $this->getLogger()->warning(`Unknown "firstplace" type: '` .strtolower($this->getConfig()->get("firstplace")). `'. Check any typos you might have made. For now, the type will be set to 'model' for default`);
             $this->firstplacetypechoosen = "model";
-        } else {
-            $this->firstplacetypechoosen = $this->getConfig()->get("firstplace");
-        }
+        } else $this->firstplacetypechoosen = $this->getConfig()->get("firstplace");
+
         if (!is_array($this->getConfig()->get("blacklist"))) {
             $this->getLogger()->warning(`An error in the 'blacklist' option was found. For now, no player will be blacklisted from using PlayerManager form.`);
         } else {
@@ -107,9 +106,8 @@ class Main extends PluginBase implements Listener {
                         if (in_array($this->getConfig()->get("firstplace"), $this::FIRST_PLACE_TYPE) === false) {
                             $commandSender->sendMessage(TF::colorize("&eUnknown firstplace type: '" .strtolower($this->getConfig()->get("firstplace")). "'. Check any typos you might have made. For now, the type will be set to 'model' for default"));
                             $this->firstplacetypechoosen = "model";
-                        } else {
-                            $this->firstplacetypechoosen = $this->getConfig()->get("firstplace");
-                        } 
+                        } else $this->firstplacetypechoosen = $this->getConfig()->get("firstplace");
+
                         if (!is_array($this->getConfig()->get("blacklist"))) {
                             $commandSender->sendMessage(TF::colorize("&eAn error in the 'blacklist' option was found. For now, no player will be blacklisted from using PlayerManager form."));
                         } else {
@@ -122,11 +120,7 @@ class Main extends PluginBase implements Listener {
                             }
 
                             if (in_array($commandSender->getName(), $this->getConfig()->get("blacklist"))) {
-                                if ($commandSender->getName() === "CONSOLE") {
-                                    $commandSender->sendMessage(TF::colorize("&cIt's useless to blacklist Console. Console can't open forms."));
-                                } else {
-                                    $commandSender->sendMessage(TF::colorize("&cUnfortunately, you are in the list of blacklisted players from using PlayerManager form. This means &lyou can't use PlayerManager form anymore."));
-                                }
+                                $commandSender->sendMessage(TF::colorize("&cYou are not allowed to manage players using PlayerManager&l"));
                             }
                         }
                         return true;
@@ -142,9 +136,8 @@ class Main extends PluginBase implements Listener {
                     }
 
                     $this->openPlayerManagerForm($commandSender, $args);
-                } else {
-                    $commandSender->sendMessage("This command only works for players! Forcing to execute on console might occurs an error");
-                }
+                } else $commandSender->sendMessage("This command only works for players! Forcing to execute on console might occurs an error");
+
                 return true;
         }
         return true;
@@ -211,9 +204,7 @@ class Main extends PluginBase implements Listener {
                 switch ($data) {
                     case 0:
                         $form = new SimpleForm(function (Player $player, $data = null) {
-                            if ($data === null) {
-                                return true;
-                            }
+                            if ($data === null) return true;
                             
                             switch ($data) {
                                 case $data:
@@ -224,7 +215,6 @@ class Main extends PluginBase implements Listener {
                         $form->setTitle($this::FORMTITLE);
                         $form->setContent("Select the player you want to manage");
                         foreach ($this->getServer()->getOnlinePlayers() as $value) {
-                            $language = Server::getInstance()->getLanguage();
                             $clientData = $value->getPlayerInfo()->getExtraData();
 
                             switch (strtolower($this->firstplacetypechoosen)) {
@@ -258,31 +248,23 @@ class Main extends PluginBase implements Listener {
                         return $form;
                     case 1:
                         $form = new SimpleForm(function (Player $player, $data = null) {
-                            if ($data === null) {
-                                return true;
-                            }
+                            if ($data === null) return true;
                             
                             switch ($data) {
                                 case 0:
                                     $form = new SimpleForm(function (Player $player, $data = null) {
-                                        if ($data === null) {
-                                            return true;
-                                        }
+                                        if ($data === null) return true;
                                         
                                         switch ($data) {
                                             case $data:
                                                 $target = $this->getServer()->getOfflinePlayer(array_values($this->getServer()->getNameBans()->getEntries())[$data]->getName());
                                                 $form = new SimpleForm(function (Player $player, $data = null) use ($target) {
-                                                    if ($data === null) {
-                                                        return true;
-                                                    }
+                                                    if ($data === null) return true;
                                                     
                                                     switch ($data) {
                                                         case 0:
                                                             $form = new ModalForm(function (Player $player, $data = null) use ($target) {
-                                                                if ($data === null) {
-                                                                    return true;
-                                                                }
+                                                                if ($data === null) return true;
             
                                                                 switch ($data) {
                                                                     case 0:
@@ -394,11 +376,10 @@ class Main extends PluginBase implements Listener {
                         if (in_array($this->getConfig()->get("firstplace"), $this::FIRST_PLACE_TYPE) === false) {
                             $player->sendMessage(TF::colorize("&eUnknown firstplace type: '" .strtolower($this->getConfig()->get("firstplace")). "'. Check any misspells or typos you might have made. For now, the type will be set to 'model' for default"));
                             $this->firstplacetypechoosen = "model";
-                        } else {
-                            $this->firstplacetypechoosen = $this->getConfig()->get("firstplace");
-                        }
+                        } else $this->firstplacetypechoosen = $this->getConfig()->get("firstplace");
+                        
                         if (in_array($player->getName(), $this->getConfig()->get("blacklist"))) {
-                            $player->sendMessage(TF::colorize("&cUnfortunately, you are in the list of blacklisted players from using PlayerManager form. This means &lyou can't use PlayerManager form anymore."));
+                            $player->sendMessage(TF::colorize("&cYou are not allowed to manage players using PlayerManager&l"));
                         }
                     break;
                 }
